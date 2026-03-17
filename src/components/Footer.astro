@@ -1,0 +1,43 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-white/5 bg-zinc-950">
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="text-2xl font-display tracking-widest text-white uppercase mb-4">Twinkle Brothers</h3>
+        <p class="text-zinc-400 text-sm leading-relaxed">
+          Reggae legends since 1962.<br />
+          The definitive digital archive.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold text-sm mb-4">Navigation</h4>
+        <ul class="space-y-2 text-sm text-zinc-400">
+          <li><a href="/history" class="hover:text-accent transition-colors">History</a></li>
+          <li><a href="/timeline" class="hover:text-accent transition-colors">Photo Timeline</a></li>
+          <li><a href="/musicians" class="hover:text-accent transition-colors">Musicians</a></li>
+          <li><a href="/discography" class="hover:text-accent transition-colors">Discography</a></li>
+          <li><a href="/tour" class="hover:text-accent transition-colors">Tour Dates</a></li>
+          <li><a href="/concerts" class="hover:text-accent transition-colors">Concerts</a></li>
+          <li><a href="/shop" class="hover:text-accent transition-colors">Shop</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-white font-semibold text-sm mb-4">Connect</h4>
+        <ul class="space-y-2 text-sm text-zinc-400">
+          <li><a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">Spotify</a></li>
+          <li><a href="https://bandcamp.com" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">Bandcamp</a></li>
+          <li><a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-white/5 text-center text-xs text-zinc-500">
+      <span>&copy; {year} Twinkle Brothers. All rights reserved.</span>
+    </div>
+  </div>
+</footer>

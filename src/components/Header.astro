@@ -1,0 +1,74 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/history', label: 'History' },
+  { href: '/timeline', label: 'Photos' },
+  { href: '/musicians', label: 'Musicians' },
+  { href: '/discography', label: 'Discography' },
+  { href: '/tour', label: 'Tour' },
+  { href: '/concerts', label: 'Concerts' },
+  { href: '/shop', label: 'Shop' },
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-white/5">
+  <nav class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="text-2xl font-display tracking-widest text-white uppercase hover:text-accent transition-colors">
+      Twinkle Brothers
+    </a>
+
+    <button
+      id="mobile-menu-btn"
+      class="md:hidden text-white"
+      aria-label="Toggle menu"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <ul class="hidden md:flex items-center gap-6">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class:list={[
+              'text-sm font-medium transition-colors hover:text-accent',
+              currentPath === link.href ? 'text-accent' : 'text-zinc-300',
+            ]}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+    <ul class="flex flex-col gap-4">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class:list={[
+              'text-sm font-medium transition-colors hover:text-accent',
+              currentPath === link.href ? 'text-accent' : 'text-zinc-300',
+            ]}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

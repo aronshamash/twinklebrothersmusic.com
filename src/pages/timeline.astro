@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// SSR — will query D1 once images are ingested
+const images: any[] = [];
+---
+
+<BaseLayout title="Photo Timeline — Twinkle Brothers">
+  <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
+    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-12">Timeline</h1>
+    {images.length === 0 ? (
+      <p class="text-zinc-400">No images yet — ingest some with <code class="text-accent">pnpm ingest</code>.</p>
+    ) : (
+      <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
+        {images.map((image) => (
+          <a href={`/image/${image.id}`} class="block mb-4 break-inside-avoid group">
+            <img
+              src={`/cdn/${image.r2_key}`}
+              alt={image.caption || ''}
+              class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
+              loading="lazy"
+            />
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,86 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Twinkle Brothers — Reggae Legends Since 1962">
+  <!-- Hero -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <div class="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900/80 to-zinc-950 z-10"></div>
+    <div class="relative z-20 text-center px-6 max-w-4xl mx-auto">
+      <h1 class="font-display text-6xl md:text-8xl lg:text-9xl tracking-widest uppercase text-white mb-6">
+        Twinkle Brothers
+      </h1>
+      <p class="text-zinc-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+        Reggae legends from Anguilla. Five decades of conscious music, cultural resistance, and international touring.
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href="/history" class="bg-accent text-zinc-950 font-semibold px-8 py-3 rounded hover:bg-accent-light transition-colors">
+          Our Story
+        </a>
+        <a href="/discography" class="border border-white/20 text-white font-semibold px-8 py-3 rounded hover:border-accent hover:text-accent transition-colors">
+          Discography
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brief History Intro -->
+  <section class="max-w-4xl mx-auto px-6 py-20">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">The Story</h2>
+    <p class="text-zinc-300 text-lg leading-relaxed mb-6">
+      Formed in Anguilla in 1962 by Norman Grant, the Twinkle Brothers became one of reggae's most significant and enduring acts. Known for uncompromising Rastafarian consciousness and deeply spiritual lyrics, they toured the world for over five decades.
+    </p>
+    <a href="/history" class="text-accent hover:text-accent-light transition-colors font-medium">
+      Read the full history →
+    </a>
+  </section>
+
+  <!-- Latest Images -->
+  <section class="max-w-6xl mx-auto px-6 pb-20">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Archive</h2>
+    <p class="text-zinc-400 mb-6">Photo archive coming soon — adding images from five decades of touring.</p>
+    <a href="/timeline" class="text-accent hover:text-accent-light transition-colors font-medium">
+      Browse the timeline →
+    </a>
+  </section>
+
+  <!-- Spotify Embed -->
+  <section class="max-w-4xl mx-auto px-6 pb-20">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Listen</h2>
+    <div class="rounded-xl overflow-hidden">
+      <iframe
+        style="border-radius:12px"
+        src="https://open.spotify.com/embed/artist/REPLACE_WITH_ARTIST_ID?utm_source=generator&theme=0"
+        width="100%"
+        height="352"
+        frameborder="0"
+        allowfullscreen
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </section>
+
+  <!-- Bandcamp Embed -->
+  <section class="max-w-4xl mx-auto px-6 pb-20">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Buy Music</h2>
+    <div class="bg-zinc-900 rounded-xl p-6">
+      <p class="text-zinc-400 mb-4">Support the Twinkle Brothers directly on Bandcamp.</p>
+      <!-- Replace with actual Bandcamp embed code -->
+      <a href="https://twinklebrothers.bandcamp.com" target="_blank" rel="noopener noreferrer"
+         class="inline-block bg-accent text-zinc-950 font-semibold px-6 py-3 rounded hover:bg-accent-light transition-colors">
+        Visit Bandcamp
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured Tour Date -->
+  <section class="max-w-4xl mx-auto px-6 pb-20">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">On Tour</h2>
+    <p class="text-zinc-400 mb-4">See upcoming dates and book tickets.</p>
+    <a href="/tour" class="text-accent hover:text-accent-light transition-colors font-medium">
+      View all tour dates →
+    </a>
+  </section>
+</BaseLayout>

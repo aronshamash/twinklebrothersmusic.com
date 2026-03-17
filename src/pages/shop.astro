@@ -1,0 +1,16 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Shop — Twinkle Brothers">
+  <div class="pt-24 max-w-4xl mx-auto px-6 pb-20">
+    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-12">Shop</h1>
+    <p class="text-zinc-400 mb-8">Buy music, merchandise and more on Bandcamp.</p>
+    <!-- Replace with actual Bandcamp embed -->
+    <a href="https://twinklebrothers.bandcamp.com" target="_blank" rel="noopener noreferrer"
+       class="inline-block bg-accent text-zinc-950 font-semibold px-8 py-3 rounded hover:bg-accent-light transition-colors">
+      Visit Bandcamp Shop
+    </a>
+  </div>
+</BaseLayout>

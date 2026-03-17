@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { fetchTourDates } from '../lib/sheets';
+
+const events = await fetchTourDates();
+---
+
+<BaseLayout title="Tour Dates — Twinkle Brothers" description="Upcoming Twinkle Brothers tour dates, concerts and live performances.">
+  <div class="pt-24 max-w-4xl mx-auto px-6 pb-20">
+    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-12">Tour Dates</h1>
+
+    {events.length === 0 ? (
+      <p class="text-zinc-400">No upcoming dates at this time. Check back soon.</p>
+    ) : (
+      <div class="space-y-4">
+        {events.map((event) => (
+          <div class="flex flex-col md:flex-row md:items-center gap-4 border border-white/10 rounded-xl p-6 hover:border-accent/30 transition-colors">
+            <div class="md:w-40 text-accent font-semibold text-lg shrink-0">{event.date}</div>
+            <div class="flex-1">
+              <div class="text-white font-semibold">{event.eventName}</div>
+              {event.location && <div class="text-zinc-400 text-sm mt-1">{event.location}</div>}
+            </div>
+            {event.confirmed && (
+              <div class="text-xs text-zinc-500 border border-white/10 rounded px-3 py-1 shrink-0">
+                {event.confirmed}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

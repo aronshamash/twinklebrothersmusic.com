@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const { id } = Astro.params;
+
+// TODO: query D1 for image by id
+const image = null;
+
+if (!image) {
+  return Astro.redirect('/timeline');
+}
+---
+
+<BaseLayout title="Photo — Twinkle Brothers">
+  <div class="pt-24 max-w-4xl mx-auto px-6 pb-20">
+    <p class="text-zinc-400">Image not found.</p>
+  </div>
+</BaseLayout>
