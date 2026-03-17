@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { fetchTourDates } from '../lib/sheets';
 
-const events = await fetchTourDates();
+const allEvents = await fetchTourDates();
+const events = allEvents.filter((event) => event.confirmed.toUpperCase() === 'Y');
 ---
 
 <BaseLayout title="Tour Dates — Twinkle Brothers" description="Upcoming Twinkle Brothers tour dates, concerts and live performances.">
@@ -20,11 +21,6 @@ const events = await fetchTourDates();
               <div class="text-white font-semibold">{event.eventName}</div>
               {event.location && <div class="text-zinc-400 text-sm mt-1">{event.location}</div>}
             </div>
-            {event.confirmed && (
-              <div class="text-xs text-zinc-500 border border-white/10 rounded px-3 py-1 shrink-0">
-                {event.confirmed}
-              </div>
-            )}
           </div>
         ))}
       </div>

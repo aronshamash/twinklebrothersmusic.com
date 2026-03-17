@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://twinklebrothersmusic.com',
-  output: 'hybrid',
+  output: 'server',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
