@@ -1,28 +1,180 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllImages, imageDate, formatImageDate, type Image } from '../lib/db';
 
-// SSR — will query D1 once images are ingested
-const images: any[] = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+const images: Image[] = env ? await getAllImages(env) : [];
+
+const THRESHOLD = 50;
+const useDotTimeline = images.length >= THRESHOLD;
+
+// --- Year-bucketed masonry (< 50 images) ---
+const grouped: Record<string, Image[]> = {};
+for (const image of images) {
+  const dateStr = imageDate(image);
+  const year = dateStr ? new Date(dateStr + 'T00:00:00').getFullYear().toString() : 'Unknown';
+  (grouped[year] ??= []).push(image);
+}
+const sortedYears = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
+
+// --- Horizontal dot timeline (>= 50 images) ---
+const AXIS_START = 1962;
+const AXIS_END = new Date().getFullYear();
+const AXIS_SPAN = AXIS_END - AXIS_START;
+const AXIS_MIN_WIDTH = AXIS_SPAN * 80; // 80px per year
+
+const yearTicks: { year: number; pct: number }[] = [];
+for (let year = 1965; year <= AXIS_END; year += 5) {
+  yearTicks.push({ year, pct: ((year - AXIS_START) / AXIS_SPAN) * 100 });
+}
+
+function toAxisPct(dateStr: string | null): number {
+  if (!dateStr) return 0;
+  const d = new Date(dateStr + 'T00:00:00');
+  const yearFrac = d.getFullYear() + d.getMonth() / 12;
+  return Math.min(100, Math.max(0, ((yearFrac - AXIS_START) / AXIS_SPAN) * 100));
+}
+
+const dotImages = images.map((image) => ({
+  ...image,
+  pct: toAxisPct(imageDate(image)),
+  displayDate: formatImageDate(image),
+}));
 ---
 
-<BaseLayout title="Photo Timeline — Twinkle Brothers">
-  <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
-    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-12">Timeline</h1>
-    {images.length === 0 ? (
-      <p class="text-zinc-400">No images yet — ingest some with <code class="text-accent">pnpm ingest</code>.</p>
-    ) : (
-      <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
-        {images.map((image) => (
-          <a href={`/image/${image.id}`} class="block mb-4 break-inside-avoid group">
-            <img
-              src={`/cdn/${image.r2_key}`}
-              alt={image.caption || ''}
-              class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
-              loading="lazy"
-            />
-          </a>
+<BaseLayout title="Timeline — Twinkle Brothers">
+  <div class="pt-24 pb-20">
+    <div class="max-w-6xl mx-auto px-6 mb-12">
+      <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white">Timeline</h1>
+    </div>
+
+    {images.length === 0 && (
+      <div class="max-w-6xl mx-auto px-6">
+        <p class="text-zinc-400">No archive items yet.</p>
+      </div>
+    )}
+
+    {/* Year-bucketed masonry — sparse archive */}
+    {!useDotTimeline && images.length > 0 && (
+      <div class="max-w-6xl mx-auto px-6 space-y-16">
+        {sortedYears.map((year) => (
+          <div>
+            <h2 class="font-display text-3xl md:text-4xl tracking-widest text-accent mb-6 border-b border-zinc-800 pb-3">{year}</h2>
+            <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
+              {grouped[year].map((image) => (
+                <a href={`/image/${image.id}`} class="block mb-4 break-inside-avoid group">
+                  <div class="relative">
+                    <img
+                      src={`/cdn/${image.r2_key}`}
+                      alt={image.caption || ''}
+                      class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
+                      loading="lazy"
+                    />
+                    <span class={`absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded uppercase tracking-wider ${image.type === 'poster' ? 'bg-accent text-zinc-950' : 'bg-zinc-900/80 text-zinc-300'}`}>
+                      {image.type}
+                    </span>
+                  </div>
+                  {image.caption && (
+                    <p class="text-zinc-400 text-sm mt-1.5 px-0.5 line-clamp-2">{image.caption}</p>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
         ))}
+      </div>
+    )}
+
+    {/* Horizontal dot timeline — dense archive */}
+    {useDotTimeline && (
+      <div class="px-6">
+        <div class="overflow-x-auto pb-6" id="timeline-scroll">
+          <div class="relative" style={`min-width: ${AXIS_MIN_WIDTH}px; height: 240px;`}>
+            {/* Axis line */}
+            <div class="absolute top-1/2 left-0 right-0 h-px bg-zinc-700 -translate-y-1/2"></div>
+
+            {/* Year ticks */}
+            {yearTicks.map(({ year, pct }) => (
+              <div class="absolute top-1/2 -translate-y-1/2 flex flex-col items-center" style={`left: ${pct}%`}>
+                <div class="w-px h-4 bg-zinc-600"></div>
+                <span class="text-zinc-500 text-xs mt-1 select-none">{year}</span>
+              </div>
+            ))}
+
+            {/* Image dots */}
+            {dotImages.map((image) => (
+              <div
+                class="dot-wrapper absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+                style={`left: ${image.pct}%`}
+              >
+                <button
+                  class={`dot-trigger rounded-full border-2 border-zinc-950 transition-transform hover:scale-125 focus:outline-none focus:scale-125 ${image.type === 'poster' ? 'w-4 h-4 bg-accent' : 'w-3 h-3 bg-zinc-300'}`}
+                  aria-label={image.caption || image.displayDate}
+                  data-id={image.id}
+                />
+                <div class="dot-popup absolute bottom-8 left-1/2 -translate-x-1/2 w-48 bg-zinc-900 border border-zinc-700 rounded-lg overflow-hidden shadow-xl pointer-events-none opacity-0 transition-opacity z-10">
+                  <img
+                    src={`/cdn/${image.r2_key}`}
+                    alt={image.caption || ''}
+                    class="w-full h-32 object-cover"
+                    loading="lazy"
+                  />
+                  <div class="p-2">
+                    <p class="text-zinc-300 text-xs">{image.displayDate}</p>
+                    <span class={`text-xs font-semibold uppercase tracking-wider ${image.type === 'poster' ? 'text-accent' : 'text-zinc-500'}`}>
+                      {image.type}
+                    </span>
+                    {image.caption && (
+                      <p class="text-zinc-400 text-xs mt-0.5 line-clamp-2">{image.caption}</p>
+                    )}
+                    <a href={`/image/${image.id}`} class="block mt-2 text-accent text-xs hover:underline">
+                      View →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p class="text-zinc-600 text-xs mt-2 px-1">Scroll to explore · Gold dots = posters · Grey dots = photos</p>
       </div>
     )}
   </div>
 </BaseLayout>
+
+<script>
+  // Toggle popup visibility on click/tap (CSS :hover handles mouse)
+  document.querySelectorAll<HTMLElement>('.dot-wrapper').forEach((wrapper) => {
+    const trigger = wrapper.querySelector<HTMLButtonElement>('.dot-trigger');
+    const popup = wrapper.querySelector<HTMLElement>('.dot-popup');
+    if (!trigger || !popup) return;
+
+    // Show on hover via CSS — handled by the group below
+    wrapper.addEventListener('mouseenter', () => { popup.style.opacity = '1'; popup.style.pointerEvents = 'auto'; });
+    wrapper.addEventListener('mouseleave', () => { popup.style.opacity = '0'; popup.style.pointerEvents = 'none'; });
+
+    // Toggle on click for touch devices
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = popup.style.opacity === '1';
+      // Close all others
+      document.querySelectorAll<HTMLElement>('.dot-popup').forEach((other) => {
+        other.style.opacity = '0';
+        other.style.pointerEvents = 'none';
+      });
+      if (!isOpen) {
+        popup.style.opacity = '1';
+        popup.style.pointerEvents = 'auto';
+      }
+    });
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll<HTMLElement>('.dot-popup').forEach((popup) => {
+      popup.style.opacity = '0';
+      popup.style.pointerEvents = 'none';
+    });
+  });
+</script>

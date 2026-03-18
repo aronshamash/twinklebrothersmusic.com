@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getImagesByType, formatImageDate } from '../lib/db';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+const photos = env ? await getImagesByType(env, 'photo') : [];
+---
+
+<BaseLayout title="Photos — Twinkle Brothers">
+  <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
+    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-12">Photos</h1>
+    {photos.length === 0 ? (
+      <p class="text-zinc-400">Photo archive coming soon.</p>
+    ) : (
+      <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
+        {photos.map((photo) => (
+          <a href={`/image/${photo.id}?from=photo`} class="block mb-4 break-inside-avoid group">
+            <img
+              src={`/cdn/${photo.r2_key}`}
+              alt={photo.caption || ''}
+              class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
+              loading="lazy"
+            />
+            {photo.caption && (
+              <p class="text-zinc-500 text-xs mt-1 px-1">{formatImageDate(photo)}</p>
+            )}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

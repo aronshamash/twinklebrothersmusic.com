@@ -1,18 +1,78 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getImageById, getAdjacentImages, formatImageDate } from '../../lib/db';
 
 const { id } = Astro.params;
 
-// TODO: query D1 for image by id
-const image = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+const image = env && id ? await getImageById(env, id) : null;
 
 if (!image) {
-  return Astro.redirect('/timeline');
+  return Astro.redirect('/photos');
 }
+
+const fromType = Astro.url.searchParams.get('from'); // 'photo' | 'poster' | null
+const { prev, next } = await getAdjacentImages(env, image, fromType);
+
+const displayDate = formatImageDate(image);
+const isPoster = image.type === 'poster';
 ---
 
-<BaseLayout title="Photo — Twinkle Brothers">
+<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`}>
   <div class="pt-24 max-w-4xl mx-auto px-6 pb-20">
-    <p class="text-zinc-400">Image not found.</p>
+    <!-- Nav row -->
+    <div class="mb-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href={isPoster ? '/posters' : '/photos'} class="text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
+          ← {isPoster ? 'Posters' : 'Photos'}
+        </a>
+        <span class={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${isPoster ? 'bg-accent text-zinc-950' : 'bg-zinc-800 text-zinc-300'}`}>
+          {image.type}
+        </span>
+      </div>
+
+      <!-- Prev / Next -->
+      <div class="flex items-center gap-2">
+        {prev ? (
+          <a id="nav-prev" href={`/image/${prev}${fromType ? `?from=${fromType}` : ''}`} class="text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded border border-zinc-700 hover:border-zinc-500 text-sm" title="Previous (←)">
+            ← Prev
+          </a>
+        ) : (
+          <span class="text-zinc-700 px-3 py-1.5 rounded border border-zinc-800 text-sm cursor-not-allowed">← Prev</span>
+        )}
+        {next ? (
+          <a id="nav-next" href={`/image/${next}${fromType ? `?from=${fromType}` : ''}`} class="text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded border border-zinc-700 hover:border-zinc-500 text-sm" title="Next (→)">
+            Next →
+          </a>
+        ) : (
+          <span class="text-zinc-700 px-3 py-1.5 rounded border border-zinc-800 text-sm cursor-not-allowed">Next →</span>
+        )}
+      </div>
+    </div>
+
+    <img
+      src={`/cdn/${image.r2_key}`}
+      alt={image.caption || ''}
+      class="w-full rounded-lg mb-8"
+    />
+
+    <div class="space-y-2 text-sm">
+      <p class="text-zinc-400">{displayDate}</p>
+      {image.caption && <p class="text-white text-lg">{image.caption}</p>}
+      {image.credit && <p class="text-zinc-500">Credit: {image.credit}</p>}
+      {image.location && <p class="text-zinc-500">Location: {image.location}</p>}
+    </div>
   </div>
 </BaseLayout>
+
+<script define:vars={{ prev, next, fromType }}>
+  const qs = fromType ? `?from=${fromType}` : '';
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft' && prev) {
+      window.location.href = `/image/${prev}${qs}`;
+    } else if (event.key === 'ArrowRight' && next) {
+      window.location.href = `/image/${next}${qs}`;
+    }
+  });
+</script>

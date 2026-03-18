@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getImagesByType, formatImageDate } from '../lib/db';
 
-// SSR — will query D1 for type=poster once images are ingested
-const posters: any[] = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+const posters = env ? await getImagesByType(env, 'poster') : [];
 ---
 
 <BaseLayout title="Posters — Twinkle Brothers">
@@ -13,13 +15,17 @@ const posters: any[] = [];
     ) : (
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {posters.map((poster) => (
-          <a href={`/image/${poster.id}`} class="group">
+          <a href={`/image/${poster.id}?from=poster`} class="group">
             <img
               src={`/cdn/${poster.r2_key}`}
               alt={poster.caption || ''}
               class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
               loading="lazy"
             />
+            <p class="text-zinc-500 text-xs mt-2">{formatImageDate(poster)}</p>
+            {poster.caption && (
+              <p class="text-zinc-400 text-sm mt-1 truncate">{poster.caption}</p>
+            )}
           </a>
         ))}
       </div>
