@@ -1,0 +1,127 @@
+---
+export const prerender = true;
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Video {
+  id: string;
+  title: string;
+  category: 'concert' | 'interview' | 'documentary';
+  description?: string;
+  year?: number;
+  start?: number;
+}
+
+const videos: Video[] = [
+  {
+    id: 'Ijim5Igd5P4',
+    title: 'Twinkle Brothers Live',
+    category: 'concert',
+  },
+  {
+    id: '1RUwPoDx96s',
+    title: 'Twinkle Brothers Live',
+    category: 'concert',
+  },
+  {
+    id: 'GJ6hnbphgJQ',
+    title: 'Twinkle Brothers Live',
+    category: 'concert',
+    start: 3001,
+  },
+];
+
+const concerts = videos.filter(v => v.category === 'concert');
+const interviews = videos.filter(v => v.category === 'interview');
+const documentaries = videos.filter(v => v.category === 'documentary');
+---
+
+<BaseLayout title="Videos — Twinkle Brothers" description="Live concerts, interviews and documentaries featuring the Twinkle Brothers.">
+  <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
+    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-16">Videos</h1>
+
+    {concerts.length > 0 && (
+      <section class="mb-20">
+        <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-10 border-b border-zinc-800 pb-4">Some of Our Favourite Shows</h2>
+        <div class="grid grid-cols-1 gap-8">
+          {concerts.map(video => (
+            <div>
+              <div class="aspect-video bg-zinc-800 rounded-lg overflow-hidden mb-4">
+                <iframe
+                  src={`https://www.youtube.com/embed/${video.id}${video.start ? `?start=${video.start}` : ''}`}
+                  title={video.title}
+                  class="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"
+                />
+              </div>
+              {(video.year || video.description) && (
+                <div class="flex items-center gap-3 mt-2">
+                  {video.year && <span class="text-zinc-500 text-sm">{video.year}</span>}
+                  {video.description && <p class="text-zinc-500 text-sm">{video.description}</p>}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {interviews.length > 0 && (
+      <section class="mb-20">
+        <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-10 border-b border-zinc-800 pb-4">Interviews</h2>
+        <div class="grid grid-cols-1 gap-8">
+          {interviews.map(video => (
+            <div>
+              <div class="aspect-video bg-zinc-800 rounded-lg overflow-hidden mb-4">
+                <iframe
+                  src={`https://www.youtube.com/embed/${video.id}${video.start ? `?start=${video.start}` : ''}`}
+                  title={video.title}
+                  class="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"
+                />
+              </div>
+              {(video.year || video.description) && (
+                <div class="flex items-center gap-3 mt-2">
+                  {video.year && <span class="text-zinc-500 text-sm">{video.year}</span>}
+                  {video.description && <p class="text-zinc-500 text-sm">{video.description}</p>}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {documentaries.length > 0 && (
+      <section>
+        <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-10 border-b border-zinc-800 pb-4">Documentaries</h2>
+        <div class="grid grid-cols-1 gap-8">
+          {documentaries.map(video => (
+            <div>
+              <div class="aspect-video bg-zinc-800 rounded-lg overflow-hidden mb-4">
+                <iframe
+                  src={`https://www.youtube.com/embed/${video.id}${video.start ? `?start=${video.start}` : ''}`}
+                  title={video.title}
+                  class="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy"
+                />
+              </div>
+              {(video.year || video.description) && (
+                <div class="flex items-center gap-3 mt-2">
+                  {video.year && <span class="text-zinc-500 text-sm">{video.year}</span>}
+                  {video.description && <p class="text-zinc-500 text-sm">{video.description}</p>}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+  </div>
+</BaseLayout>

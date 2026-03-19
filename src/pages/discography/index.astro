@@ -1,0 +1,268 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchDiscography, type DiscogsRelease } from '../../lib/discogs';
+
+const releases = await fetchDiscography();
+const layout = Astro.url.searchParams.get('layout') ?? 'grid';
+
+function classifyFormat(format: string): 'album' | 'single' | 'ep' | 'other' {
+  const f = format.toLowerCase();
+  if (f.includes('album') || f.includes('lp')) return 'album';
+  if (f.includes('ep')) return 'ep';
+  if (f.includes('single') || f.includes('7"') || f.includes('12"')) return 'single';
+  return 'other';
+}
+
+function groupByYear(items: DiscogsRelease[]): Map<number, DiscogsRelease[]> {
+  const map = new Map<number, DiscogsRelease[]>();
+  for (const item of items) {
+    const year = item.year > 0 ? item.year : 0;
+    if (!map.has(year)) map.set(year, []);
+    map.get(year)!.push(item);
+  }
+  return new Map([...map.entries()].sort((a, b) => a[0] - b[0]));
+}
+
+function groupByDecade(items: DiscogsRelease[]): Map<string, DiscogsRelease[]> {
+  const map = new Map<string, DiscogsRelease[]>();
+  for (const item of items) {
+    const decade = item.year > 0 ? `${Math.floor(item.year / 10) * 10}s` : 'Unknown';
+    if (!map.has(decade)) map.set(decade, []);
+    map.get(decade)!.push(item);
+  }
+  return map;
+}
+
+const albums = releases.filter(r => classifyFormat(r.format) === 'album');
+const singles = releases.filter(r => {
+  const c = classifyFormat(r.format);
+  return c === 'single' || c === 'ep' || c === 'other';
+});
+
+const albumsByYear = groupByYear(albums);
+const singlesByYear = groupByYear(singles);
+const allByYear = groupByYear(releases);
+const allByDecade = groupByDecade(releases);
+
+const layouts = [
+  { id: 'grid',     label: 'Grid by Year' },
+  { id: 'timeline', label: 'Timeline' },
+  { id: 'featured', label: 'Featured + List' },
+  { id: 'decade',   label: 'By Decade' },
+];
+---
+
+<BaseLayout title="Discography — Twinkle Brothers">
+  <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
+    <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-10">Discography</h1>
+
+    {/* Layout switcher */}
+    <div class="flex gap-2 mb-14 flex-wrap">
+      {layouts.map(l => (
+        <a
+          href={`?layout=${l.id}`}
+          class={`px-4 py-1.5 rounded-full text-xs tracking-widest uppercase font-medium transition-colors ${
+            layout === l.id
+              ? 'bg-white text-black'
+              : 'text-zinc-400 border border-zinc-700 hover:border-zinc-400'
+          }`}
+        >
+          {l.label}
+        </a>
+      ))}
+    </div>
+
+    {releases.length === 0 ? (
+      <p class="text-zinc-400">Discography unavailable.</p>
+    ) : (
+
+      <>
+        {/* ── LAYOUT 1: Grid by year ─────────────────────────────── */}
+        {layout === 'grid' && (
+          <>
+            {albums.length > 0 && (
+              <section class="mb-20">
+                <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-10 border-b border-zinc-800 pb-4">Albums</h2>
+                {[...albumsByYear.entries()].map(([year, yearReleases]) => (
+                  <div class="mb-12">
+                    <p class="text-zinc-400 text-xs tracking-widest uppercase mb-6">{year > 0 ? year : 'Unknown'}</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
+                      {yearReleases.map((release: DiscogsRelease) => (
+                        <a href={`/discography/${release.id}`} class="group">
+                          <div class="aspect-square bg-zinc-800 rounded-md overflow-hidden mb-4">
+                            {release.thumb
+                              ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                              : <div class="w-full h-full flex items-center justify-center text-zinc-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                            }
+                          </div>
+                          <p class="text-white font-semibold text-base leading-snug mb-1">{release.title}</p>
+                          <p class="text-zinc-400 text-sm">{release.label}</p>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+            {singles.length > 0 && (
+              <section>
+                <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-10 border-b border-zinc-800 pb-4">Singles & EPs</h2>
+                {[...singlesByYear.entries()].map(([year, yearReleases]) => (
+                  <div class="mb-10">
+                    <p class="text-zinc-600 text-xs tracking-widest uppercase mb-5">{year > 0 ? year : 'Unknown'}</p>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-5">
+                      {yearReleases.map((release: DiscogsRelease) => (
+                        <a href={`/discography/${release.id}`} class="group">
+                          <div class="aspect-square bg-zinc-800 rounded-md overflow-hidden mb-3">
+                            {release.thumb
+                              ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                              : <div class="w-full h-full flex items-center justify-center text-zinc-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                            }
+                          </div>
+                          <p class="text-white font-medium text-sm leading-snug mb-0.5">{release.title}</p>
+                          <p class="text-zinc-500 text-xs">{release.label}</p>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+          </>
+        )}
+
+        {/* ── LAYOUT 2: Chronological timeline ──────────────────── */}
+        {layout === 'timeline' && (
+          <div>
+            {[...allByYear.entries()].map(([year, yearReleases]) => (
+              <div class="mb-2">
+                {yearReleases.map((release: DiscogsRelease, index: number) => (
+                  <a href={`/discography/${release.id}`} class="flex gap-8 items-start py-6 border-t border-zinc-800 group hover:bg-zinc-900/40 -mx-6 px-6 transition-colors">
+                    <div class="w-12 shrink-0 pt-1">
+                      {index === 0 && year > 0 && (
+                        <span class="text-zinc-500 text-sm font-mono tracking-wider">{year}</span>
+                      )}
+                    </div>
+                    <div class="w-40 h-40 shrink-0 bg-zinc-800 rounded-md overflow-hidden">
+                      {release.thumb
+                        ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                        : <div class="w-full h-full flex items-center justify-center text-zinc-700"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                      }
+                    </div>
+                    <div class="flex-1 min-w-0 pt-1">
+                      <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+                        <p class="text-white font-bold text-xl leading-tight">{release.title}</p>
+                        {release.format && <span class="text-zinc-500 text-sm shrink-0">{release.format}</span>}
+                      </div>
+                      {release.label && <p class="text-zinc-400 text-sm">{release.label}</p>}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── LAYOUT 3: Featured albums + dense singles list ─────── */}
+        {layout === 'featured' && (
+          <>
+            {albums.length > 0 && (
+              <section class="mb-20">
+                <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-10 border-b border-zinc-800 pb-4">Albums</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-12">
+                  {albums.map((release: DiscogsRelease) => (
+                    <a href={`/discography/${release.id}`} class="group">
+                      <div class="aspect-square bg-zinc-800 rounded-lg overflow-hidden mb-5 shadow-xl">
+                        {release.thumb
+                          ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                          : <div class="w-full h-full flex items-center justify-center text-zinc-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                        }
+                      </div>
+                      <p class="text-white font-bold text-xl leading-tight mb-1">{release.title}</p>
+                      <p class="text-zinc-400 text-sm">{release.year > 0 ? release.year : ''}{release.label ? ` · ${release.label}` : ''}</p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
+            {singles.length > 0 && (
+              <section>
+                <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-6 border-b border-zinc-800 pb-4">Singles & EPs</h2>
+                <div class="divide-y divide-zinc-800/60">
+                  {singles.map((release: DiscogsRelease) => (
+                    <a href={`/discography/${release.id}`} class="flex items-center gap-4 py-3 group hover:bg-zinc-900/50 -mx-3 px-3 rounded transition-colors">
+                      <div class="w-10 h-10 shrink-0 bg-zinc-800 rounded overflow-hidden">
+                        {release.thumb
+                          ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover" loading="lazy" />
+                          : <div class="w-full h-full flex items-center justify-center text-zinc-700"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                        }
+                      </div>
+                      <p class="text-white text-sm flex-1 min-w-0 truncate">{release.title}</p>
+                      <p class="text-zinc-500 text-xs shrink-0 w-10 text-right">{release.year > 0 ? release.year : ''}</p>
+                      <p class="text-zinc-600 text-xs shrink-0 w-32 text-right truncate hidden sm:block">{release.label}</p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+
+        {/* ── LAYOUT 4: By decade ────────────────────────────────── */}
+        {layout === 'decade' && (
+          <div>
+            {[...allByDecade.entries()].map(([decade, decadeReleases]) => {
+              const decadeAlbums = decadeReleases.filter(r => classifyFormat(r.format) === 'album');
+              const decadeSingles = decadeReleases.filter(r => classifyFormat(r.format) !== 'album');
+              return (
+                <div class="mb-20">
+                  <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mb-10 border-b border-zinc-800 pb-6">
+                    The {decade}
+                  </h2>
+                  {decadeAlbums.length > 0 && (
+                    <div class="mb-8">
+                      <p class="text-zinc-600 text-xs tracking-[0.2em] uppercase mb-5">Albums</p>
+                      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-6 mb-6">
+                        {decadeAlbums.map((release: DiscogsRelease) => (
+                          <a href={`/discography/${release.id}`} class="group">
+                            <div class="aspect-square bg-zinc-800 rounded-md overflow-hidden mb-3">
+                              {release.thumb
+                                ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                : <div class="w-full h-full flex items-center justify-center text-zinc-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                              }
+                            </div>
+                            <p class="text-white font-semibold text-sm leading-snug mb-0.5">{release.title}</p>
+                            <p class="text-zinc-500 text-xs">{release.year > 0 ? release.year : ''}</p>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {decadeSingles.length > 0 && (
+                    <div>
+                      <p class="text-zinc-600 text-xs tracking-[0.2em] uppercase mb-4">Singles & EPs</p>
+                      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                        {decadeSingles.map((release: DiscogsRelease) => (
+                          <a href={`/discography/${release.id}`} class="group">
+                            <div class="aspect-square bg-zinc-800 rounded overflow-hidden mb-2">
+                              {release.thumb
+                                ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                : <div class="w-full h-full flex items-center justify-center text-zinc-700"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
+                              }
+                            </div>
+                            <p class="text-white text-xs font-medium leading-snug">{release.title}</p>
+                            {release.year > 0 && <p class="text-zinc-600 text-xs">{release.year}</p>}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchDiscography, fetchReleaseDetail, type DiscogsArtistCredit } from '../../lib/discogs';
+
+const { id } = Astro.params;
+const releaseId = Number(id);
+
+if (!releaseId || isNaN(releaseId)) {
+  return Astro.redirect('/discography');
+}
+
+// Ensure list cache is warm so fetchReleaseDetail can pull label/format
+await fetchDiscography();
+const release = await fetchReleaseDetail(releaseId);
+
+if (!release) {
+  return Astro.redirect('/discography');
+}
+
+const primaryImage = release.images.find(img => img.type === 'primary') ?? release.images[0];
+const coverUrl = primaryImage?.uri ?? '';
+
+// Filter out heading/index tracks (no position = section divider)
+const tracks = release.tracklist.filter(t => t.position !== '');
+
+// Group extra artists by role for display
+const musiciansByRole = new Map<string, string[]>();
+for (const credit of release.extraartists) {
+  const roles = credit.role.split(',').map(r => r.trim()).filter(Boolean);
+  for (const role of roles) {
+    if (!musiciansByRole.has(role)) musiciansByRole.set(role, []);
+    musiciansByRole.get(role)!.push(credit.name);
+  }
+}
+
+// YouTube embeds from videos
+function youtubeId(uri: string): string | null {
+  const match = uri.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+const videos = release.videos
+  .map(v => ({ ...v, ytId: youtubeId(v.uri) }))
+  .filter(v => v.ytId)
+  .slice(0, 1);
+---
+
+<BaseLayout title={`${release.title} — Twinkle Brothers`}>
+  <div class="pt-24 max-w-5xl mx-auto px-6 pb-20">
+
+    <a href="/discography" class="inline-flex items-center gap-2 text-zinc-500 text-sm hover:text-white transition-colors mb-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Discography
+    </a>
+
+    {/* Hero */}
+    <div class="flex flex-col md:flex-row gap-10 mb-16">
+      <div class="w-full md:w-80 shrink-0">
+        <div class="aspect-square bg-zinc-800 rounded-lg overflow-hidden shadow-2xl">
+          {coverUrl
+            ? <img src={coverUrl} alt={release.title} class="w-full h-full object-cover" />
+            : <div class="w-full h-full flex items-center justify-center text-zinc-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+              </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col justify-start">
+        {release.format && (
+          <p class="text-zinc-500 text-xs uppercase tracking-[0.2em] mb-3">{release.format}</p>
+        )}
+        <h1 class="font-display text-4xl md:text-6xl tracking-wide uppercase text-white mb-4 leading-none">{release.title}</h1>
+        {release.year > 0 && <p class="text-zinc-400 text-lg mb-6">{release.year}</p>}
+        <div class="flex flex-col gap-2 mb-6">
+          {release.label && (
+            <div class="flex gap-3 text-sm">
+              <span class="text-zinc-600 w-32 shrink-0">Label</span>
+              <span class="text-zinc-300">{release.label}</span>
+            </div>
+          )}
+          {[...musiciansByRole.entries()].map(([role, names]) => (
+            <div class="flex gap-3 text-sm">
+              <span class="text-zinc-600 w-32 shrink-0">{role}</span>
+              <span class="text-zinc-300">{names.join(', ')}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-16">
+
+      {/* Tracklist */}
+      {tracks.length > 0 && (
+        <div>
+          <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-6 border-b border-zinc-800 pb-4">Tracklist</h2>
+          <div class="divide-y divide-zinc-800/60">
+            {tracks.map(track => (
+              <div class="flex items-baseline gap-4 py-3">
+                <span class="text-zinc-600 text-xs font-mono w-8 shrink-0">{track.position}</span>
+                <span class="text-white text-sm flex-1">{track.title}</span>
+                {track.duration && <span class="text-zinc-600 text-xs shrink-0">{track.duration}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Notes + Videos */}
+      <div>
+        {release.notes && (
+          <div class="mb-10">
+            <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-6 border-b border-zinc-800 pb-4">Notes</h2>
+            <p class="text-zinc-400 text-sm leading-relaxed whitespace-pre-line">{release.notes}</p>
+          </div>
+        )}
+
+        {videos.length > 0 && (
+          <div>
+            <h2 class="text-zinc-400 text-xs tracking-[0.25em] uppercase font-medium mb-6 border-b border-zinc-800 pb-4">Videos</h2>
+            <div class="flex flex-col gap-6">
+              {videos.map(video => (
+                <div>
+                  <div class="aspect-video rounded-md overflow-hidden bg-zinc-800 mb-2">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${video.ytId}`}
+                      title={video.title}
+                      class="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                    />
+                  </div>
+                  <p class="text-zinc-500 text-xs">{video.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>
