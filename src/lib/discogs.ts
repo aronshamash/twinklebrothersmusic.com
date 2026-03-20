@@ -1,5 +1,6 @@
 export interface DiscogsRelease {
-  id: number;
+  id: number;       // individual release ID
+  master_id?: number; // master ID if one exists (used for video fetching)
   title: string;
   year: number;
   label: string;
@@ -32,7 +33,6 @@ export interface DiscogsReleaseDetail {
   videos: { uri: string; title: string }[];
   notes: string;
   extraartists: DiscogsArtistCredit[];
-  // from the artist releases list
   label: string;
   format: string;
 }
@@ -83,6 +83,7 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
 
   try {
     const releases: DiscogsRelease[] = [];
+    const seenMasters = new Set<number>();
     let page = 1;
     let totalPages = 1;
 
@@ -100,26 +101,39 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
 
       for (const release of data.releases) {
         if (release.role !== 'Main') continue;
-        if (release.type === 'master') {
-          // masters: always include
-        } else if (!release.master_id) {
-          // standalone release (no master) — only include if it's a single/EP, not an album/comp
+        if (release.type === 'master') continue; // always use individual releases for richer data
+
+        if (release.master_id) {
+          // Part of a master — use first release seen per master
+          if (seenMasters.has(release.master_id)) continue;
+          seenMasters.add(release.master_id);
+          releases.push({
+            id: release.id,
+            master_id: release.master_id,
+            title: release.title,
+            year: release.year ?? 0,
+            label: release.label ?? '',
+            thumb: release.thumb ?? '',
+            type: release.type,
+            format: release.format ?? '',
+            release_type: 'release',
+          });
+        } else {
+          // Standalone release (no master)
           const fmt = (release.format ?? '').toLowerCase();
           const isAlbum = fmt.includes('lp') || fmt.includes('album') || fmt.includes('comp');
-          if (isAlbum) continue;
-        } else {
-          continue; // has a master — covered by the master entry
+          if (isAlbum) continue; // standalone album pressings are usually noise
+          releases.push({
+            id: release.id,
+            title: release.title,
+            year: release.year ?? 0,
+            label: release.label ?? '',
+            thumb: release.thumb ?? '',
+            type: release.type,
+            format: release.format ?? '',
+            release_type: 'release',
+          });
         }
-        releases.push({
-          id: release.id,
-          title: release.title,
-          year: release.year ?? 0,
-          label: release.label ?? '',
-          thumb: release.thumb ?? '',
-          type: release.type,
-          format: release.format ?? '',
-          release_type: release.type === 'master' ? 'master' : 'release',
-        });
       }
 
       page++;
@@ -135,7 +149,7 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
   }
 }
 
-export async function fetchReleaseDetail(id: number, releaseType: 'master' | 'release' = 'master'): Promise<DiscogsReleaseDetail | null> {
+export async function fetchReleaseDetail(id: number, masterId?: number): Promise<DiscogsReleaseDetail | null> {
   const token = import.meta.env.DISCOGS_TOKEN;
   if (!token) return null;
 
@@ -145,31 +159,28 @@ export async function fetchReleaseDetail(id: number, releaseType: 'master' | 're
   }
 
   try {
-    const endpoint = releaseType === 'release'
-      ? `https://api.discogs.com/releases/${id}`
-      : `https://api.discogs.com/masters/${id}`;
-
-    const response = await fetch(endpoint, { headers: DISCOGS_HEADERS() });
+    const response = await fetch(`https://api.discogs.com/releases/${id}`, { headers: DISCOGS_HEADERS() });
 
     if (!response.ok) {
-      console.error(`Discogs fetch error (${releaseType} ${id}): ${response.status}`);
+      console.error(`Discogs release fetch error (${id}): ${response.status}`);
       return null;
     }
 
     const raw = await response.json();
     const listEntry = cachedReleases?.find(r => r.id === id);
 
-    // For masters: also fetch the main release to get extraartists/credits
-    let extraartists: DiscogsArtistCredit[] = raw.extraartists ?? [];
-    if (releaseType === 'master' && raw.main_release) {
+    // Fetch videos from master if available (releases don't always carry videos)
+    let videos: { uri: string; title: string }[] = raw.videos ?? [];
+    const masterIdToUse = masterId ?? listEntry?.master_id ?? raw.master_id;
+    if (!videos.length && masterIdToUse) {
       try {
-        const mainResponse = await fetch(`https://api.discogs.com/releases/${raw.main_release}`, { headers: DISCOGS_HEADERS() });
-        if (mainResponse.ok) {
-          const mainRaw = await mainResponse.json();
-          extraartists = mainRaw.extraartists ?? [];
+        const masterResponse = await fetch(`https://api.discogs.com/masters/${masterIdToUse}`, { headers: DISCOGS_HEADERS() });
+        if (masterResponse.ok) {
+          const masterRaw = await masterResponse.json();
+          videos = masterRaw.videos ?? [];
         }
       } catch {
-        // credits are optional, don't fail the whole request
+        // videos are optional
       }
     }
 
@@ -189,18 +200,20 @@ export async function fetchReleaseDetail(id: number, releaseType: 'master' | 're
         uri150: image.uri150,
         type: image.type,
       })),
-      videos: (raw.videos ?? []).map((video: { uri: string; title: string }) => ({
+      videos: videos.map((video: { uri: string; title: string }) => ({
         uri: video.uri,
         title: video.title,
       })),
       notes: raw.notes ?? '',
-      extraartists: extraartists.map((artist: { name: string; role: string; id?: number }) => ({
+      extraartists: (raw.extraartists ?? []).map((artist: { name: string; role: string; id?: number }) => ({
         name: artist.name,
         role: artist.role,
         id: artist.id,
       })),
       label: (raw.labels?.[0]?.name ?? listEntry?.label ?? ''),
-      format: listEntry?.format ?? '',
+      format: raw.formats?.[0]
+        ? [raw.formats[0].name, ...(raw.formats[0].descriptions ?? [])].join(', ')
+        : (listEntry?.format ?? ''),
     };
 
     detailCache.set(id, { data: detail, time: Date.now() });
