@@ -30,7 +30,7 @@ for (const credit of release.extraartists) {
   const roles = credit.role.split(',').map(r => r.trim()).filter(Boolean);
   for (const role of roles) {
     if (!musiciansByRole.has(role)) musiciansByRole.set(role, []);
-    musiciansByRole.get(role)!.push(credit.name);
+    musiciansByRole.get(role)!.push(credit.name.replace(/\s*\(\d+\)$/, ''));
   }
 }
 
