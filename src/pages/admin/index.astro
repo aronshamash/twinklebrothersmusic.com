@@ -1,0 +1,52 @@
+---
+import { verifyAdminCookie } from '../../lib/adminAuth';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+
+if (env && await verifyAdminCookie(Astro.request, env)) {
+  return Astro.redirect('/admin/upload');
+}
+
+const hasError = Astro.url.searchParams.get('error') === '1';
+---
+
+<!doctype html>
+<html lang="en" class="bg-zinc-950">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Twinkle Brothers</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+      * { box-sizing: border-box; }
+      body { font-family: Inter, sans-serif; }
+    </style>
+  </head>
+  <body class="bg-zinc-950 min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm">
+      <h1 class="text-white text-2xl font-semibold mb-8 text-center tracking-wide">Admin</h1>
+
+      {hasError && (
+        <p class="text-red-400 text-sm text-center mb-4">Incorrect password.</p>
+      )}
+
+      <form method="POST" action="/api/admin/login" class="flex flex-col gap-4">
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          autofocus
+          required
+          class="bg-zinc-800 text-white border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 placeholder:text-zinc-500"
+        />
+        <button
+          type="submit"
+          class="bg-white text-zinc-950 font-medium rounded-lg px-4 py-3 text-sm hover:bg-zinc-200 transition-colors"
+        >
+          Sign in
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,275 @@
+---
+import { verifyAdminCookie } from '../../lib/adminAuth';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+
+if (!env || !await verifyAdminCookie(Astro.request, env)) {
+  return Astro.redirect('/admin');
+}
+
+const canAnalyse = Boolean(env.ANTHROPIC_API_KEY);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload — Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+      * { box-sizing: border-box; }
+      body { font-family: Inter, sans-serif; }
+      .drop-zone.drag-over { border-color: #a1a1aa; background: #27272a; }
+    </style>
+  </head>
+  <body class="bg-zinc-950 text-white min-h-screen" data-can-analyse={canAnalyse ? '1' : '0'}>
+    <div class="max-w-4xl mx-auto px-6 py-10">
+      <div class="flex items-center justify-between mb-10">
+        <h1 class="text-2xl font-semibold tracking-wide">Upload</h1>
+        <a href="/api/admin/logout" class="text-zinc-400 text-sm hover:text-white transition-colors">Sign out</a>
+      </div>
+
+      <!-- Drop zone -->
+      <div
+        id="drop-zone"
+        class="drop-zone border-2 border-dashed border-zinc-700 rounded-xl p-12 text-center cursor-pointer transition-colors hover:border-zinc-500 mb-10"
+      >
+        <p class="text-zinc-400 mb-2">Drop images here or <span class="text-white underline">browse</span></p>
+        <p class="text-zinc-600 text-sm">JPG, PNG, WEBP, GIF — multiple files allowed</p>
+        <input id="file-input" type="file" accept="image/*" multiple class="hidden" />
+      </div>
+
+      <!-- File queue -->
+      <div id="file-queue" class="flex flex-col gap-6"></div>
+
+      <!-- Upload all -->
+      <div id="upload-bar" class="hidden mt-8 flex items-center justify-between">
+        <span id="upload-status" class="text-zinc-400 text-sm"></span>
+        <button
+          id="upload-btn"
+          class="bg-white text-zinc-950 font-medium rounded-lg px-6 py-2.5 text-sm hover:bg-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Upload All
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const dropZone = document.getElementById('drop-zone') as HTMLDivElement;
+      const fileInput = document.getElementById('file-input') as HTMLInputElement;
+      const fileQueue = document.getElementById('file-queue') as HTMLDivElement;
+      const uploadBar = document.getElementById('upload-bar') as HTMLDivElement;
+      const uploadBtn = document.getElementById('upload-btn') as HTMLButtonElement;
+      const uploadStatus = document.getElementById('upload-status') as HTMLSpanElement;
+
+      interface QueueItem {
+        id: string;
+        file: File;
+        objectUrl: string;
+        status: 'pending' | 'uploading' | 'done' | 'error';
+      }
+
+      const queue: QueueItem[] = [];
+      const canAnalyse = document.body.dataset.canAnalyse === '1';
+
+      // --- Drop zone ---
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropZone.classList.remove('drag-over');
+        addFiles(event.dataTransfer?.files ?? null);
+      });
+      fileInput.addEventListener('change', () => addFiles(fileInput.files));
+
+      function addFiles(files: FileList | null) {
+        if (!files) return;
+        for (const file of Array.from(files)) {
+          const id = Math.random().toString(36).slice(2);
+          const objectUrl = URL.createObjectURL(file);
+          queue.push({ id, file, objectUrl, status: 'pending' });
+          renderCard(id);
+        }
+        fileInput.value = '';
+        updateUploadBar();
+      }
+
+      function renderCard(id: string) {
+        const item = queue.find(queueItem => queueItem.id === id);
+        if (!item) return;
+
+        const existing = document.getElementById(`card-${id}`);
+        if (existing) return;
+
+        const isLikelyPoster = /poster|concert|gig|show|flyer/i.test(item.file.name);
+
+        const card = document.createElement('div');
+        card.id = `card-${id}`;
+        card.className = 'bg-zinc-900 rounded-xl p-5 flex gap-5 items-start';
+        card.innerHTML = `
+          <img src="${item.objectUrl}" alt="" class="w-24 h-24 object-cover rounded-lg flex-shrink-0" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-zinc-400 mb-4 truncate">${item.file.name}</p>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <label class="block text-xs text-zinc-500 mb-1">Type</label>
+                <select name="type" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500">
+                  <option value="photo" ${!isLikelyPoster ? 'selected' : ''}>Photo</option>
+                  <option value="poster" ${isLikelyPoster ? 'selected' : ''}>Poster</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-zinc-500 mb-1">Date precision</label>
+                <select name="date_precision" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500">
+                  <option value="day">Day</option>
+                  <option value="month">Month</option>
+                  <option value="year">Year</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-col gap-3">
+              <input name="caption" placeholder="Caption" class="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500" />
+              <div class="grid grid-cols-2 gap-3">
+                <input name="date" placeholder="Date (YYYY-MM-DD)" class="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500" />
+                <input name="location" placeholder="Location" class="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500" />
+              </div>
+              <input name="credit" placeholder="Credit / photographer" class="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500" />
+            </div>
+            <div class="flex items-center gap-3 mt-4">
+              <button data-id="${id}" class="analyse-btn text-xs bg-zinc-800 border border-zinc-700 hover:border-zinc-500 text-zinc-300 rounded-lg px-3 py-1.5 transition-colors hidden">Auto-analyse</button>
+              <span data-id="${id}" class="status-badge text-xs"></span>
+              <button data-id="${id}" class="remove-btn text-xs text-zinc-600 hover:text-zinc-400 ml-auto transition-colors">Remove</button>
+            </div>
+          </div>
+        `;
+
+        fileQueue.appendChild(card);
+
+        // Show/hide analyse button based on type
+        const typeSelect = card.querySelector('select[name="type"]') as HTMLSelectElement;
+        const analyseBtn = card.querySelector('.analyse-btn') as HTMLButtonElement;
+
+        function updateAnalyseBtn() {
+          if (canAnalyse && typeSelect.value === 'poster') {
+            analyseBtn.classList.remove('hidden');
+          } else {
+            analyseBtn.classList.add('hidden');
+          }
+        }
+        updateAnalyseBtn();
+        typeSelect.addEventListener('change', updateAnalyseBtn);
+
+        // Auto-analyse
+        analyseBtn.addEventListener('click', async () => {
+          analyseBtn.textContent = 'Analysing...';
+          analyseBtn.disabled = true;
+          const form = new FormData();
+          form.append('file', item.file);
+          try {
+            const response = await fetch('/api/admin/analyze', { method: 'POST', body: form });
+            if (!response.ok) throw new Error(`${response.status}`);
+            const analysis = await response.json() as {
+              event_date: string | null;
+              location: string | null;
+              caption: string | null;
+              credit: string | null;
+            };
+            if (analysis.caption) (card.querySelector('input[name="caption"]') as HTMLInputElement).value = analysis.caption;
+            if (analysis.event_date) (card.querySelector('input[name="date"]') as HTMLInputElement).value = analysis.event_date;
+            if (analysis.location) (card.querySelector('input[name="location"]') as HTMLInputElement).value = analysis.location;
+            if (analysis.credit) (card.querySelector('input[name="credit"]') as HTMLInputElement).value = analysis.credit;
+            analyseBtn.textContent = 'Re-analyse';
+          } catch {
+            analyseBtn.textContent = 'Analysis failed';
+          }
+          analyseBtn.disabled = false;
+        });
+
+        // Remove
+        card.querySelector('.remove-btn')!.addEventListener('click', () => {
+          const index = queue.findIndex(queueItem => queueItem.id === id);
+          if (index !== -1) {
+            URL.revokeObjectURL(queue[index].objectUrl);
+            queue.splice(index, 1);
+          }
+          card.remove();
+          updateUploadBar();
+        });
+      }
+
+      function updateUploadBar() {
+        const pending = queue.filter(queueItem => queueItem.status === 'pending').length;
+        if (queue.length === 0) {
+          uploadBar.classList.add('hidden');
+        } else {
+          uploadBar.classList.remove('hidden');
+          uploadStatus.textContent = `${pending} file${pending !== 1 ? 's' : ''} ready`;
+          uploadBtn.disabled = pending === 0;
+        }
+      }
+
+      function setCardStatus(id: string, status: 'uploading' | 'done' | 'error', message?: string) {
+        const badge = document.querySelector(`.status-badge[data-id="${id}"]`) as HTMLSpanElement;
+        const item = queue.find(queueItem => queueItem.id === id);
+        if (item) item.status = status;
+
+        if (status === 'uploading') {
+          badge.textContent = 'Uploading...';
+          badge.className = 'status-badge text-xs text-zinc-400';
+        } else if (status === 'done') {
+          badge.textContent = 'Uploaded';
+          badge.className = 'status-badge text-xs text-green-400';
+        } else {
+          badge.textContent = message ?? 'Failed';
+          badge.className = 'status-badge text-xs text-red-400';
+        }
+      }
+
+      // --- Upload ---
+      uploadBtn.addEventListener('click', async () => {
+        const pending = queue.filter(queueItem => queueItem.status === 'pending');
+        if (pending.length === 0) return;
+
+        uploadBtn.disabled = true;
+        uploadStatus.textContent = `Uploading...`;
+
+        for (const item of pending) {
+          const card = document.getElementById(`card-${item.id}`)!;
+          const get = (name: string) => (card.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLSelectElement).value;
+
+          setCardStatus(item.id, 'uploading');
+
+          const form = new FormData();
+          form.append('file', item.file);
+          form.append('type', get('type'));
+          form.append('caption', get('caption'));
+          form.append('date', get('date'));
+          form.append('date_precision', get('date_precision'));
+          form.append('location', get('location'));
+          form.append('credit', get('credit'));
+
+          try {
+            const response = await fetch('/api/admin/upload', { method: 'POST', body: form });
+            if (!response.ok) {
+              const text = await response.text();
+              setCardStatus(item.id, 'error', text || `Error ${response.status}`);
+            } else {
+              setCardStatus(item.id, 'done');
+            }
+          } catch (error) {
+            setCardStatus(item.id, 'error', 'Network error');
+          }
+        }
+
+        updateUploadBar();
+      });
+    </script>
+  </body>
+</html>
