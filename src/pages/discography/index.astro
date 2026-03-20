@@ -48,7 +48,7 @@ const allByDecade = groupByDecade(releases);
 const albumCovers = new Map<number, string>();
 if (layout === 'featured') {
   const details = await Promise.all(
-    albums.map(album => fetchReleaseDetail(album.id, album.master_id).catch(() => null))
+    albums.map(album => fetchReleaseDetail(album.id, album.master_id, album.release_type).catch(() => null))
   );
   for (let i = 0; i < albums.length; i++) {
     const detail = details[i];

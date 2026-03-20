@@ -82,8 +82,10 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
   }
 
   try {
-    const releases: DiscogsRelease[] = [];
-    const seenMasters = new Set<number>();
+    // Collect masters and individual releases separately
+    const masterEntries = new Map<number, DiscogsApiRelease>(); // master_id -> master entry
+    const releaseBuckets = new Map<number, DiscogsApiRelease[]>(); // master_id -> individual releases
+    const standalones: DiscogsApiRelease[] = [];
     let page = 1;
     let totalPages = 1;
 
@@ -101,43 +103,82 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
 
       for (const release of data.releases) {
         if (release.role !== 'Main') continue;
-        if (release.type === 'master') continue; // always use individual releases for richer data
-
-        if (release.master_id) {
-          // Part of a master — use first release seen per master
-          if (seenMasters.has(release.master_id)) continue;
-          seenMasters.add(release.master_id);
-          releases.push({
-            id: release.id,
-            master_id: release.master_id,
-            title: release.title,
-            year: release.year ?? 0,
-            label: release.label ?? '',
-            thumb: release.thumb ?? '',
-            type: release.type,
-            format: release.format ?? '',
-            release_type: 'release',
-          });
+        if (release.type === 'master') {
+          masterEntries.set(release.id, release);
+        } else if (release.master_id) {
+          if (!releaseBuckets.has(release.master_id)) releaseBuckets.set(release.master_id, []);
+          releaseBuckets.get(release.master_id)!.push(release);
         } else {
-          // Standalone release (no master)
-          const fmt = (release.format ?? '').toLowerCase();
-          const isAlbum = fmt.includes('lp') || fmt.includes('album') || fmt.includes('comp');
-          if (isAlbum) continue; // standalone album pressings are usually noise
-          releases.push({
-            id: release.id,
-            title: release.title,
-            year: release.year ?? 0,
-            label: release.label ?? '',
-            thumb: release.thumb ?? '',
-            type: release.type,
-            format: release.format ?? '',
-            release_type: 'release',
-          });
+          standalones.push(release);
         }
       }
 
       page++;
     }
+
+    // Format priority: prefer LP/Album over single when multiple releases exist per master
+    function formatScore(fmt: string): number {
+      const f = fmt.toLowerCase();
+      if (f.includes('album')) return 4;
+      if (f.includes('lp')) return 3;
+      if (f.includes('cd')) return 2;
+      if (f.includes('ep') || f.includes('mini')) return 1;
+      return 0;
+    }
+
+    const releases: DiscogsRelease[] = [];
+
+    for (const [masterId, masterEntry] of masterEntries) {
+      const bucket = releaseBuckets.get(masterId);
+      if (bucket?.length) {
+        // Use the individual release with the best format
+        const best = bucket.reduce((prev, curr) =>
+          formatScore(curr.format ?? '') > formatScore(prev.format ?? '') ? curr : prev
+        );
+        releases.push({
+          id: best.id,
+          master_id: masterId,
+          title: best.title,
+          year: best.year ?? 0,
+          label: best.label ?? '',
+          thumb: best.thumb ?? '',
+          type: best.type,
+          format: best.format ?? '',
+          release_type: 'release',
+        });
+      } else {
+        // No individual releases visible — fall back to master entry
+        releases.push({
+          id: masterEntry.id,
+          master_id: masterId,
+          title: masterEntry.title,
+          year: masterEntry.year ?? 0,
+          label: masterEntry.label ?? '',
+          thumb: masterEntry.thumb ?? '',
+          type: masterEntry.type,
+          format: masterEntry.format ?? '',
+          release_type: 'master',
+        });
+      }
+    }
+
+    for (const release of standalones) {
+      const fmt = (release.format ?? '').toLowerCase();
+      if (fmt.includes('lp') || fmt.includes('album') || fmt.includes('comp')) continue;
+      releases.push({
+        id: release.id,
+        title: release.title,
+        year: release.year ?? 0,
+        label: release.label ?? '',
+        thumb: release.thumb ?? '',
+        type: release.type,
+        format: release.format ?? '',
+        release_type: 'release',
+      });
+    }
+
+    // Sort by year ascending
+    releases.sort((a, b) => (a.year || 9999) - (b.year || 9999));
 
     cachedReleases = releases;
     cacheTime = Date.now();
@@ -149,7 +190,7 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
   }
 }
 
-export async function fetchReleaseDetail(id: number, masterId?: number): Promise<DiscogsReleaseDetail | null> {
+export async function fetchReleaseDetail(id: number, masterId?: number, releaseType: 'master' | 'release' = 'release'): Promise<DiscogsReleaseDetail | null> {
   const token = import.meta.env.DISCOGS_TOKEN;
   if (!token) return null;
 
@@ -159,7 +200,10 @@ export async function fetchReleaseDetail(id: number, masterId?: number): Promise
   }
 
   try {
-    const response = await fetch(`https://api.discogs.com/releases/${id}`, { headers: DISCOGS_HEADERS() });
+    const endpoint = releaseType === 'master'
+      ? `https://api.discogs.com/masters/${id}`
+      : `https://api.discogs.com/releases/${id}`;
+    const response = await fetch(endpoint, { headers: DISCOGS_HEADERS() });
 
     if (!response.ok) {
       console.error(`Discogs release fetch error (${id}): ${response.status}`);
