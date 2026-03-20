@@ -1,10 +1,11 @@
 name = "twinkle-brothers-site"
+pages_build_output_dir = "dist"
 compatibility_date = "2024-12-01"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "twinkle-db"
-database_id = "REPLACE_AFTER_CF_CREATE"
+database_id = "b23d6493-bb87-4285-8a0f-35606e4fc635"
 
 [[r2_buckets]]
 binding = "IMAGES"
