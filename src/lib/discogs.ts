@@ -99,8 +99,16 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
 
       for (const release of data.releases) {
         if (release.role !== 'Main') continue;
-        // include masters, and standalone releases (no master_id means no master exists)
-        if (release.type !== 'master' && release.master_id) continue;
+        if (release.type === 'master') {
+          // masters: always include
+        } else if (!release.master_id) {
+          // standalone release (no master) — only include if it's a single/EP, not an album/comp
+          const fmt = (release.format ?? '').toLowerCase();
+          const isAlbum = fmt.includes('lp') || fmt.includes('album') || fmt.includes('comp');
+          if (isAlbum) continue;
+        } else {
+          continue; // has a master — covered by the master entry
+        }
         releases.push({
           id: release.id,
           title: release.title,

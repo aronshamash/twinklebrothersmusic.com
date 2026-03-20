@@ -7,7 +7,7 @@ const layout = Astro.url.searchParams.get('layout') ?? 'grid';
 
 function classifyFormat(format: string): 'album' | 'single' | 'ep' | 'other' {
   const f = format.toLowerCase();
-  if (f.includes('album') || f.includes('lp') || f.includes('cd') || f.includes('compilation')) return 'album';
+  if (f.includes('album') || f.includes('lp') || f.includes('comp')) return 'album';
   if (f.includes('ep') || f.includes('mini')) return 'ep';
   if (f.includes('single') || f.includes('7"') || f.includes('12"') || f.includes('10"')) return 'single';
   return 'other';
