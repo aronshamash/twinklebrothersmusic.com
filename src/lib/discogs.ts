@@ -6,6 +6,7 @@ export interface DiscogsRelease {
   thumb: string;
   type: string;
   format: string;
+  release_type: 'master' | 'release';
 }
 
 export interface DiscogsTrack {
@@ -117,6 +118,7 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
           thumb: release.thumb ?? '',
           type: release.type,
           format: release.format ?? '',
+          release_type: release.type === 'master' ? 'master' : 'release',
         });
       }
 
@@ -133,7 +135,7 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
   }
 }
 
-export async function fetchReleaseDetail(id: number): Promise<DiscogsReleaseDetail | null> {
+export async function fetchReleaseDetail(id: number, releaseType: 'master' | 'release' = 'master'): Promise<DiscogsReleaseDetail | null> {
   const token = import.meta.env.DISCOGS_TOKEN;
   if (!token) return null;
 
@@ -143,19 +145,33 @@ export async function fetchReleaseDetail(id: number): Promise<DiscogsReleaseDeta
   }
 
   try {
-    const response = await fetch(`https://api.discogs.com/masters/${id}`, {
-      headers: DISCOGS_HEADERS(),
-    });
+    const endpoint = releaseType === 'release'
+      ? `https://api.discogs.com/releases/${id}`
+      : `https://api.discogs.com/masters/${id}`;
+
+    const response = await fetch(endpoint, { headers: DISCOGS_HEADERS() });
 
     if (!response.ok) {
-      console.error(`Discogs master fetch error: ${response.status}`);
+      console.error(`Discogs fetch error (${releaseType} ${id}): ${response.status}`);
       return null;
     }
 
     const raw = await response.json();
-
-    // Pull list-level fields from the artist releases cache if available
     const listEntry = cachedReleases?.find(r => r.id === id);
+
+    // For masters: also fetch the main release to get extraartists/credits
+    let extraartists: DiscogsArtistCredit[] = raw.extraartists ?? [];
+    if (releaseType === 'master' && raw.main_release) {
+      try {
+        const mainResponse = await fetch(`https://api.discogs.com/releases/${raw.main_release}`, { headers: DISCOGS_HEADERS() });
+        if (mainResponse.ok) {
+          const mainRaw = await mainResponse.json();
+          extraartists = mainRaw.extraartists ?? [];
+        }
+      } catch {
+        // credits are optional, don't fail the whole request
+      }
+    }
 
     const detail: DiscogsReleaseDetail = {
       id: raw.id,
@@ -178,7 +194,7 @@ export async function fetchReleaseDetail(id: number): Promise<DiscogsReleaseDeta
         title: video.title,
       })),
       notes: raw.notes ?? '',
-      extraartists: (raw.extraartists ?? []).map((artist: { name: string; role: string; id?: number }) => ({
+      extraartists: extraartists.map((artist: { name: string; role: string; id?: number }) => ({
         name: artist.name,
         role: artist.role,
         id: artist.id,

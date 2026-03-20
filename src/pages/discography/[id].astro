@@ -9,9 +9,10 @@ if (!releaseId || isNaN(releaseId)) {
   return Astro.redirect('/discography');
 }
 
-// Ensure list cache is warm so fetchReleaseDetail can pull label/format
-await fetchDiscography();
-const release = await fetchReleaseDetail(releaseId);
+// Ensure list cache is warm so fetchReleaseDetail can pull label/format + release_type
+const allReleases = await fetchDiscography();
+const listEntry = allReleases.find(r => r.id === releaseId);
+const release = await fetchReleaseDetail(releaseId, listEntry?.release_type ?? 'master');
 
 if (!release) {
   return Astro.redirect('/discography');
