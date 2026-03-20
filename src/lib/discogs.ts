@@ -45,6 +45,7 @@ interface DiscogsApiRelease {
   type: string;
   role: string;
   format?: string;
+  master_id?: number;
 }
 
 interface DiscogsApiResponse {
@@ -97,8 +98,9 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
       totalPages = data.pagination.pages;
 
       for (const release of data.releases) {
-        if (release.type !== 'master') continue;
         if (release.role !== 'Main') continue;
+        // include masters, and standalone releases (no master_id means no master exists)
+        if (release.type !== 'master' && release.master_id) continue;
         releases.push({
           id: release.id,
           title: release.title,
