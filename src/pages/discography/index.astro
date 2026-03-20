@@ -7,9 +7,9 @@ const layout = Astro.url.searchParams.get('layout') ?? 'grid';
 
 function classifyFormat(format: string): 'album' | 'single' | 'ep' | 'other' {
   const f = format.toLowerCase();
-  if (f.includes('album') || f.includes('lp')) return 'album';
-  if (f.includes('ep')) return 'ep';
-  if (f.includes('single') || f.includes('7"') || f.includes('12"')) return 'single';
+  if (f.includes('album') || f.includes('lp') || f.includes('cd') || f.includes('compilation')) return 'album';
+  if (f.includes('ep') || f.includes('mini')) return 'ep';
+  if (f.includes('single') || f.includes('7"') || f.includes('12"') || f.includes('10"')) return 'single';
   return 'other';
 }
 
@@ -43,6 +43,20 @@ const albumsByYear = groupByYear(albums);
 const singlesByYear = groupByYear(singles);
 const allByYear = groupByYear(releases);
 const allByDecade = groupByDecade(releases);
+
+// Fetch full-res covers for albums in parallel (featured layout only)
+const albumCovers = new Map<number, string>();
+if (layout === 'featured') {
+  const details = await Promise.all(
+    albums.map(album => fetchReleaseDetail(album.id).catch(() => null))
+  );
+  for (let i = 0; i < albums.length; i++) {
+    const detail = details[i];
+    if (!detail) continue;
+    const primary = detail.images.find(img => img.type === 'primary') ?? detail.images[0];
+    if (primary?.uri) albumCovers.set(albums[i].id, primary.uri);
+  }
+}
 
 const layouts = [
   { id: 'grid',     label: 'Grid by Year' },
@@ -173,8 +187,8 @@ const layouts = [
                   {albums.map((release: DiscogsRelease) => (
                     <a href={`/discography/${release.id}`} class="group">
                       <div class="aspect-square bg-zinc-800 rounded-lg overflow-hidden mb-5 shadow-xl">
-                        {release.thumb
-                          ? <img src={release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        {(albumCovers.get(release.id) || release.thumb)
+                          ? <img src={albumCovers.get(release.id) || release.thumb} alt={release.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                           : <div class="w-full h-full flex items-center justify-center text-zinc-600"><svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg></div>
                         }
                       </div>
@@ -211,9 +225,9 @@ const layouts = [
         {/* ── LAYOUT 4: By decade ────────────────────────────────── */}
         {layout === 'decade' && (
           <div>
-            {[...allByDecade.entries()].map(([decade, decadeReleases]) => {
+            {[...allByDecade.entries()].filter(([decade]) => decade !== 'Unknown').map(([decade, decadeReleases]) => {
               const decadeAlbums = decadeReleases.filter(r => classifyFormat(r.format) === 'album');
-              const decadeSingles = decadeReleases.filter(r => classifyFormat(r.format) !== 'album');
+              const decadeSingles = decadeReleases.filter(r => { const c = classifyFormat(r.format); return c === 'single' || c === 'ep' || c === 'other'; });
               return (
                 <div class="mb-20">
                   <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mb-10 border-b border-zinc-800 pb-6">
