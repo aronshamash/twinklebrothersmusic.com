@@ -13,26 +13,22 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       --pswp-bg: #09090b;
       --pswp-icon-color: #ffffff;
       --pswp-icon-color-secondary: #71717a;
-      --pswp-icon-stroke-color: #09090b;
-      --pswp-icon-stroke-width: 1px;
     }
-    .pswp-caption {
+    .pswp__img {
+      object-fit: contain !important;
+    }
+    .pswp-caption-bar {
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      padding: 2.5rem 1.5rem 1.25rem;
-      background: linear-gradient(to top, rgba(9,9,11,0.9) 0%, transparent 100%);
-      color: #e4e4e7;
-      font-size: 0.875rem;
+      height: 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 1.25rem;
+      background: rgba(9,9,11,0.85);
       pointer-events: none;
     }
-    .pswp-caption-title {
-      font-weight: 500;
-      margin-bottom: 0.2rem;
-    }
-    .pswp-caption-meta {
-      color: #a1a1aa;
-      font-size: 0.75rem;
-    }
+    .pswp-caption-bar p { margin: 0; line-height: 1.4; }
   </style>
 
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
@@ -42,8 +38,9 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
     ) : (
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {posters.map((poster) => (
-          <div
-            class="pswp-item group cursor-pointer"
+          <a
+            href={`/image/${poster.id}?from=poster`}
+            class="pswp-item group"
             data-pswp-src={`/cdn/${poster.r2_key}`}
             data-caption={poster.caption ?? ''}
             data-date={formatImageDate(poster)}
@@ -59,7 +56,7 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
             {poster.caption && (
               <p class="text-zinc-400 text-sm mt-1 truncate">{poster.caption}</p>
             )}
-          </div>
+          </a>
         ))}
       </div>
     )}
@@ -69,7 +66,7 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
     import PhotoSwipeLightbox from 'photoswipe/lightbox';
     import 'photoswipe/style.css';
 
-    const els = [...document.querySelectorAll<HTMLElement>('.pswp-item')];
+    const els = [...document.querySelectorAll<HTMLAnchorElement>('.pswp-item')];
 
     const items = els.map(el => ({
       src: el.dataset.pswpSrc!,
@@ -80,40 +77,58 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       credit: el.dataset.credit ?? '',
     }));
 
-    if (items.length > 0) {
-      const lightbox = new PhotoSwipeLightbox({
-        dataSource: items,
-        pswpModule: () => import('photoswipe'),
-        bgOpacity: 0.95,
-        padding: { top: 48, bottom: 72, left: 16, right: 16 },
-      });
+    if (items.length === 0) return;
 
-      lightbox.on('uiRegister', () => {
-        lightbox.pswp!.ui!.registerElement({
-          name: 'custom-caption',
-          order: 9,
-          isButton: false,
-          appendTo: 'root',
-          html: '',
-          onInit(el: HTMLElement, pswp) {
-            pswp.on('change', () => {
-              const item = items[pswp.currIndex];
-              const meta = [item.date, item.credit].filter(Boolean).join(' · ');
-              el.innerHTML = (item.caption || meta) ? `
-                <div class="pswp-caption">
-                  ${item.caption ? `<div class="pswp-caption-title">${item.caption}</div>` : ''}
-                  ${meta ? `<div class="pswp-caption-meta">${meta}</div>` : ''}
-                </div>` : '';
-            });
-          },
-        });
-      });
+    els.forEach((el, index) => {
+      const img = el.querySelector('img')!;
+      const updateSize = () => {
+        if (img.naturalWidth > 0) {
+          items[index].width = img.naturalWidth;
+          items[index].height = img.naturalHeight;
+        }
+      };
+      if (img.complete) updateSize();
+      else img.addEventListener('load', updateSize);
+    });
 
-      lightbox.init();
+    const lightbox = new PhotoSwipeLightbox({
+      dataSource: items,
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 1,
+      padding: { top: 40, bottom: 64, left: 8, right: 8 },
+    });
 
-      els.forEach((el, index) => {
-        el.addEventListener('click', () => lightbox.loadAndOpen(index));
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp!.ui!.registerElement({
+        name: 'caption-bar',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        html: '<div class="pswp-caption-bar"><p style="color:#e4e4e7;font-size:0.875rem;font-weight:500" id="pswp-cap-title"></p><p style="color:#71717a;font-size:0.75rem" id="pswp-cap-meta"></p></div>',
+        onInit(_el: HTMLElement, pswp) {
+          pswp.on('change', () => {
+            const item = items[pswp.currIndex];
+            const titleEl = document.getElementById('pswp-cap-title');
+            const metaEl = document.getElementById('pswp-cap-meta');
+            if (titleEl) titleEl.textContent = item.caption;
+            if (metaEl) metaEl.textContent = [item.date, item.credit].filter(Boolean).join(' · ');
+          });
+        },
       });
-    }
+    });
+
+    lightbox.init();
+
+    els.forEach((el, index) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const img = el.querySelector('img')!;
+        if (img.naturalWidth > 0) {
+          items[index].width = img.naturalWidth;
+          items[index].height = img.naturalHeight;
+        }
+        lightbox.loadAndOpen(index);
+      });
+    });
   </script>
 </BaseLayout>
