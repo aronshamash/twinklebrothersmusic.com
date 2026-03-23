@@ -1,8 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-
-const sent = Astro.url.searchParams.get('sent') === '1';
-const error = Astro.url.searchParams.get('error');
 ---
 
 <BaseLayout title="Contact — Twinkle Brothers" description="Book Twinkle Brothers for live performances, festivals, and events.">
@@ -11,19 +8,7 @@ const error = Astro.url.searchParams.get('error');
     <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-4">Contact</h1>
     <p class="text-zinc-400 mb-12">For booking enquiries, use the form below or email directly at <a href="mailto:bookings@twinklebrothersmusic.com" class="text-accent hover:underline">bookings@twinklebrothersmusic.com</a>.</p>
 
-    {sent && (
-      <div class="bg-green-950/50 border border-green-800 rounded-xl px-5 py-4 mb-8">
-        <p class="text-green-400 font-medium">Message sent — we'll be in touch soon.</p>
-      </div>
-    )}
-
-    {error && (
-      <div class="bg-red-950/50 border border-red-900 rounded-xl px-5 py-4 mb-8">
-        <p class="text-red-400 font-medium">Something went wrong. Please try again or email us directly.</p>
-      </div>
-    )}
-
-    <form method="POST" action="/api/contact" class="flex flex-col gap-5">
+    <form method="POST" action="https://formspree.io/f/xbdzvbbg" class="flex flex-col gap-5">
 
       <div class="grid sm:grid-cols-2 gap-5">
         <div>
