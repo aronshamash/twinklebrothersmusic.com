@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  activeNav?: 'upload' | 'photos';
+}
+
+const { title, activeNav } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; }
+      input:focus, select:focus, textarea:focus { outline: none; }
+      input[type="text"], input[type="date"], input, select { appearance: none; -webkit-appearance: none; }
+    </style>
+  </head>
+  <body class="bg-zinc-950 text-white min-h-screen" style="font-family: Inter, sans-serif;">
+
+    <header class="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-green-400"></div>
+          <span class="text-sm font-medium tracking-wide text-zinc-200">Twinkle Brothers — Admin</span>
+        </div>
+        <nav class="flex items-center gap-4 text-sm">
+          <a
+            href="/admin/upload"
+            class={activeNav === 'upload' ? 'text-white font-medium' : 'text-zinc-500 hover:text-zinc-300 transition-colors'}
+          >Upload</a>
+          <a
+            href="/admin/photos"
+            class={activeNav === 'photos' ? 'text-white font-medium' : 'text-zinc-500 hover:text-zinc-300 transition-colors'}
+          >Media</a>
+        </nav>
+      </div>
+      <a href="/api/admin/logout" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">Sign out</a>
+    </header>
+
+    <slot />
+
+  </body>
+</html>
