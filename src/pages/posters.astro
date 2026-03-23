@@ -8,27 +8,17 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
 ---
 
 <BaseLayout title="Posters — Twinkle Brothers">
-  <style>
-    .pswp {
-      --pswp-bg: #09090b;
-      --pswp-icon-color: #ffffff;
-      --pswp-icon-color-secondary: #71717a;
-    }
-    .pswp__img {
-      object-fit: contain !important;
-    }
+  <style is:global>
+    .pswp { --pswp-bg: #09090b; --pswp-icon-color: #fff; --pswp-icon-color-secondary: #71717a; }
+    .pswp__img { object-fit: contain !important; }
+    .pswp__counter { display: none !important; }
     .pswp-caption-bar {
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: 64px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 0 1.25rem;
+      padding: 0.75rem 1.25rem;
       background: rgba(9,9,11,0.85);
       pointer-events: none;
     }
-    .pswp-caption-bar p { margin: 0; line-height: 1.4; }
   </style>
 
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
@@ -102,7 +92,7 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
         order: 9,
         isButton: false,
         appendTo: 'root',
-        html: '<div class="pswp-caption-bar"><p style="color:#e4e4e7;font-size:0.875rem;font-weight:500" id="pswp-cap-title"></p><p style="color:#71717a;font-size:0.75rem" id="pswp-cap-meta"></p></div>',
+        html: '<div class="pswp-caption-bar"><p style="margin:0;color:#e4e4e7;font-size:0.875rem;font-weight:500;line-height:1.4" id="pswp-cap-title"></p><p style="margin:0;color:#71717a;font-size:0.75rem;line-height:1.4" id="pswp-cap-meta"></p></div>',
         onInit(_el: HTMLElement, pswp) {
           pswp.on('change', () => {
             const item = items[pswp.currIndex];
