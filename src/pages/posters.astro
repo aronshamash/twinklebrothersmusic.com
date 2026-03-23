@@ -64,8 +64,9 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       const img = el.querySelector('img')!;
       const updateSize = () => {
         if (img.naturalWidth > 0) {
-          items[index].width = img.naturalWidth;
-          items[index].height = img.naturalHeight;
+          const scale = Math.max(1, 1200 / img.naturalWidth);
+          items[index].width = Math.round(img.naturalWidth * scale);
+          items[index].height = Math.round(img.naturalHeight * scale);
         }
       };
       if (img.complete) updateSize();
@@ -92,18 +93,17 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
         item.date || item.credit ? `<p style="margin:0;color:#71717a;font-size:0.75rem;line-height:1.5">${[item.date, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>` : '',
       ].join('');
 
-      const imgEl = pswp.currSlide?.content?.element as HTMLImageElement | null;
-      if (imgEl) {
-        requestAnimationFrame(() => {
-          const rect = imgEl.getBoundingClientRect();
-          if (rect.width > 0) {
-            captionEl.style.left = rect.left + 'px';
-            captionEl.style.top = (rect.bottom + 10) + 'px';
-            captionEl.style.maxWidth = rect.width + 'px';
-            captionEl.style.opacity = '1';
-          }
-        });
-      }
+      setTimeout(() => {
+        const imgEl = pswp.currSlide?.holderElement?.querySelector('img') as HTMLImageElement | null;
+        if (!imgEl) return;
+        const rect = imgEl.getBoundingClientRect();
+        if (rect.width > 0) {
+          captionEl.style.left = rect.left + 'px';
+          captionEl.style.top = (rect.bottom + 10) + 'px';
+          captionEl.style.maxWidth = rect.width + 'px';
+          captionEl.style.opacity = '1';
+        }
+      }, 50);
     }
 
     lightbox.on('change', positionCaption);
