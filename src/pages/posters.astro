@@ -77,8 +77,6 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       credit: el.dataset.credit ?? '',
     }));
 
-    if (items.length === 0) return;
-
     els.forEach((el, index) => {
       const img = el.querySelector('img')!;
       const updateSize = () => {
