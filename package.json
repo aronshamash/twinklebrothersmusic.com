@@ -9,7 +9,9 @@
     "astro": "astro",
     "ingest": "tsx scripts/ingest.ts",
     "ingest:local": "tsx scripts/ingest.ts --local",
-    "db:migrate": "pnpm wrangler d1 execute DB --local --file migrations/0001_init.sql && pnpm wrangler d1 execute DB --local --file migrations/0002_event_date.sql && pnpm wrangler d1 execute DB --local --file migrations/0003_date_precision.sql",
+    "db:migrate": "pnpm wrangler d1 execute DB --local --file migrations/0001_init.sql && pnpm wrangler d1 execute DB --local --file migrations/0002_event_date.sql && pnpm wrangler d1 execute DB --local --file migrations/0003_date_precision.sql && pnpm wrangler d1 execute DB --local --file migrations/0004_discography.sql",
+    "sync-discography": "tsx scripts/sync-discography.ts",
+    "sync-discography:local": "tsx scripts/sync-discography.ts --local",
     "deploy": "astro build && npx wrangler pages deploy dist --project-name twinkle-brothers-site"
   },
   "dependencies": {

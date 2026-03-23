@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { fetchDiscography, fetchReleaseDetail, type DiscogsArtistCredit } from '../../lib/discogs';
+import { fetchReleaseDetail, type DiscogsArtistCredit } from '../../lib/discogs';
 
 const { id } = Astro.params;
 const releaseId = Number(id);
@@ -9,10 +9,26 @@ if (!releaseId || isNaN(releaseId)) {
   return Astro.redirect('/discography');
 }
 
-// Ensure list cache is warm so fetchReleaseDetail can pull label/format + release_type
-const allReleases = await fetchDiscography();
-const listEntry = allReleases.find(r => r.id === releaseId);
-const release = await fetchReleaseDetail(releaseId, listEntry?.master_id, listEntry?.release_type ?? 'release');
+// Look up list metadata and any preferred release override from D1
+const db = Astro.locals.runtime.env.DB;
+const [listEntryRow, overrideRow] = await Promise.all([
+  db.prepare(
+    'SELECT id, master_id, release_type FROM discography_releases WHERE id = ?'
+  ).bind(releaseId).first() as Promise<{ id: number; master_id: number | null; release_type: 'master' | 'release' } | null>,
+  db.prepare(
+    'SELECT preferred_release_id FROM discography_release_overrides WHERE release_id = ?'
+  ).bind(releaseId).first() as Promise<{ preferred_release_id: number } | null>,
+]);
+
+// If a preferred release is set, use it (always a concrete release, not a master)
+const fetchId = overrideRow?.preferred_release_id ?? releaseId;
+const fetchType = overrideRow ? 'release' : (listEntryRow?.release_type ?? 'release');
+
+const release = await fetchReleaseDetail(
+  fetchId,
+  listEntryRow?.master_id ?? undefined,
+  fetchType
+);
 
 if (!release) {
   return Astro.redirect('/discography');

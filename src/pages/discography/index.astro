@@ -2,7 +2,28 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { fetchDiscography, type DiscogsRelease } from '../../lib/discogs';
 
-const releases = await fetchDiscography();
+// Read from D1 (fast) with fallback to live Discogs API if table is empty
+let releases: DiscogsRelease[] = [];
+try {
+  const db = Astro.locals.runtime.env.DB;
+  const result = await db.prepare(
+    `SELECT r.id, r.master_id, r.title, r.year, r.label,
+            COALESCE(o.image_url, r.cover_image, r.thumb) AS thumb,
+            r.format, r.release_type
+     FROM discography_releases r
+     LEFT JOIN discography_image_overrides o ON o.release_id = r.id
+     ORDER BY r.year ASC`
+  ).all();
+  if (result.results.length > 0) {
+    releases = result.results as unknown as DiscogsRelease[];
+  } else {
+    console.warn('discography_releases is empty — falling back to live Discogs API. Run: pnpm sync-discography --force');
+    releases = await fetchDiscography();
+  }
+} catch (err) {
+  console.warn('D1 query failed, falling back to live Discogs API:', err);
+  releases = await fetchDiscography();
+}
 
 // Master IDs that are known albums but lack format data in the Discogs API
 const KNOWN_ALBUM_MASTER_IDS = new Set([

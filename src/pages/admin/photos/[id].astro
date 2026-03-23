@@ -1,0 +1,273 @@
+---
+import { verifyAdminCookie } from '../../../lib/adminAuth';
+import { getImageById, formatImageDate } from '../../../lib/db';
+import '../../../styles/global.css';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+if (!env || !await verifyAdminCookie(Astro.request, env)) {
+  return Astro.redirect('/admin');
+}
+
+const { id } = Astro.params;
+const image = id ? await getImageById(env, id) : null;
+if (!image) return Astro.redirect('/admin/photos');
+
+const date = image.event_date ?? image.taken_at ?? '';
+const dateLabel = formatImageDate(image);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; }
+      input:focus, select:focus, textarea:focus { outline: none; }
+    </style>
+  </head>
+  <body class="bg-zinc-950 text-white min-h-screen font-[Inter,sans-serif]">
+
+    <header class="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-green-400"></div>
+          <span class="text-sm font-medium tracking-wide text-zinc-200">Twinkle Brothers — Admin</span>
+        </div>
+        <nav class="flex items-center gap-4 text-sm text-zinc-500">
+          <a href="/admin/upload" class="hover:text-zinc-300 transition-colors">Upload</a>
+          <a href="/admin/photos" class="text-white font-medium">Media</a>
+        </nav>
+      </div>
+      <a href="/api/admin/logout" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">Sign out</a>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-10">
+
+      <div class="flex items-center gap-3 mb-8">
+        <a href="/admin/photos" class="text-zinc-500 hover:text-zinc-300 transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+        </a>
+        <h1 class="text-xl font-semibold text-white">Edit Media</h1>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10">
+
+        <!-- Image preview -->
+        <div>
+          <div id="preview-wrap" class="bg-zinc-900 rounded-xl overflow-hidden mb-3">
+            <img
+              id="preview-img"
+              src={`/cdn/${image.r2_key}`}
+              alt={image.caption || ''}
+              class="w-full object-contain max-h-[480px]"
+            />
+          </div>
+          <p class="text-zinc-600 text-xs font-mono break-all mb-1">{image.r2_key}</p>
+          <p class="text-zinc-600 text-xs">{dateLabel}</p>
+
+          <!-- Replace image drop zone -->
+          <div class="mt-5 border border-zinc-800 rounded-xl p-4">
+            <p class="text-sm font-medium text-zinc-300 mb-3">Replace image</p>
+            <div
+              id="replace-drop"
+              class="border-2 border-dashed border-zinc-700 rounded-lg p-6 text-center cursor-pointer hover:border-zinc-500 transition-colors relative"
+            >
+              <input id="replace-input" type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+              <p class="text-sm text-zinc-500">Drop new file or click to browse</p>
+            </div>
+            <div id="replace-preview" class="hidden mt-3">
+              <img id="replace-preview-img" src="" alt="" class="w-full rounded-lg max-h-48 object-contain bg-zinc-900" />
+              <div class="flex items-center justify-between mt-2">
+                <p id="replace-filename" class="text-xs text-zinc-500 truncate"></p>
+                <button id="clear-replace-btn" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors ml-2 flex-shrink-0">
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metadata form -->
+        <div>
+          <form id="meta-form" class="flex flex-col gap-4">
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-zinc-500 mb-1.5">Type</label>
+                <select name="type" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:border-zinc-500 cursor-pointer appearance-none">
+                  <option value="photo" selected={image.type === 'photo'}>Photo</option>
+                  <option value="poster" selected={image.type === 'poster'}>Poster</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-zinc-500 mb-1.5">Date precision</label>
+                <select name="date_precision" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white focus:border-zinc-500 cursor-pointer appearance-none">
+                  <option value="day" selected={image.date_precision === 'day'}>Day</option>
+                  <option value="month" selected={image.date_precision === 'month'}>Month</option>
+                  <option value="year" selected={image.date_precision === 'year'}>Year</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-zinc-500 mb-1.5">Caption</label>
+              <textarea name="caption" rows="2" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-zinc-500 resize-none">{image.caption ?? ''}</textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs text-zinc-500 mb-1.5">Date (YYYY-MM-DD)</label>
+              <input name="date" type="text" value={date} placeholder="YYYY-MM-DD" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-zinc-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs text-zinc-500 mb-1.5">Location</label>
+              <input name="location" type="text" value={image.location ?? ''} placeholder="Location" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-zinc-500" />
+            </div>
+
+            <div>
+              <label class="block text-xs text-zinc-500 mb-1.5">Credit</label>
+              <input name="credit" type="text" value={image.credit ?? ''} placeholder="Photographer / credit" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-zinc-500" />
+            </div>
+
+            <div id="save-status-wrap" class="hidden">
+              <p id="save-status" class="text-sm"></p>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-800">
+              <button
+                type="button"
+                id="delete-btn"
+                class="text-sm text-red-500 hover:text-red-400 transition-colors py-2"
+              >
+                Delete image
+              </button>
+              <button
+                type="submit"
+                id="save-btn"
+                class="bg-white text-zinc-950 font-semibold rounded-xl px-8 py-3 text-sm hover:bg-zinc-100 transition-colors disabled:opacity-40"
+              >
+                Save Changes
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+
+    <script define:vars={{ imageId: image.id }}>
+      const form = document.getElementById('meta-form');
+      const saveBtn = document.getElementById('save-btn');
+      const saveStatusWrap = document.getElementById('save-status-wrap');
+      const saveStatus = document.getElementById('save-status');
+      const deleteBtn = document.getElementById('delete-btn');
+
+      const replaceInput = document.getElementById('replace-input');
+      const replacePreview = document.getElementById('replace-preview');
+      const replacePreviewImg = document.getElementById('replace-preview-img');
+      const replaceFilename = document.getElementById('replace-filename');
+      const clearReplaceBtn = document.getElementById('clear-replace-btn');
+      const mainImg = document.getElementById('preview-img');
+
+      let replaceFile = null;
+      let replaceObjectUrl = null;
+
+      function showStatus(message, isError) {
+        saveStatusWrap.classList.remove('hidden');
+        saveStatus.textContent = message;
+        saveStatus.className = isError ? 'text-sm text-red-400' : 'text-sm text-green-400';
+        if (!isError) {
+          setTimeout(() => {
+            saveStatusWrap.classList.add('hidden');
+            saveStatus.textContent = '';
+          }, 3000);
+        }
+      }
+
+      replaceInput.addEventListener('change', () => {
+        const file = replaceInput.files?.[0];
+        if (!file) return;
+        if (replaceObjectUrl) URL.revokeObjectURL(replaceObjectUrl);
+        replaceFile = file;
+        replaceObjectUrl = URL.createObjectURL(file);
+        replacePreviewImg.src = replaceObjectUrl;
+        replaceFilename.textContent = file.name;
+        replacePreview.classList.remove('hidden');
+      });
+
+      clearReplaceBtn.addEventListener('click', () => {
+        if (replaceObjectUrl) URL.revokeObjectURL(replaceObjectUrl);
+        replaceFile = null;
+        replaceObjectUrl = null;
+        replaceInput.value = '';
+        replacePreview.classList.add('hidden');
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        saveStatusWrap.classList.add('hidden');
+
+        try {
+          // Step 1: replace image if a new file was selected
+          if (replaceFile) {
+            const formData = new FormData();
+            formData.append('file', replaceFile);
+            const replaceResponse = await fetch(`/api/admin/photos/${imageId}/replace`, {
+              method: 'POST',
+              body: formData,
+            });
+            if (!replaceResponse.ok) throw new Error(`Replace failed: ${await replaceResponse.text()}`);
+            // Refresh main preview with cache-bust
+            mainImg.src = mainImg.src.split('?')[0] + '?v=' + Date.now();
+            // Clear the queued file
+            if (replaceObjectUrl) URL.revokeObjectURL(replaceObjectUrl);
+            replaceFile = null;
+            replaceObjectUrl = null;
+            replaceInput.value = '';
+            replacePreview.classList.add('hidden');
+          }
+
+          // Step 2: save metadata
+          const data = Object.fromEntries(new FormData(form));
+          const metaResponse = await fetch(`/api/admin/photos/${imageId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          if (!metaResponse.ok) throw new Error(`Save failed: ${await metaResponse.text()}`);
+
+          showStatus('Saved', false);
+        } catch (err) {
+          showStatus(err.message, true);
+        }
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      });
+
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Delete this image permanently? This cannot be undone.')) return;
+        deleteBtn.textContent = 'Deleting...';
+        deleteBtn.disabled = true;
+        try {
+          const response = await fetch(`/api/admin/photos/${imageId}`, { method: 'DELETE' });
+          if (!response.ok) throw new Error(await response.text());
+          window.location.href = '/admin/photos';
+        } catch (err) {
+          deleteBtn.textContent = `Error: ${err.message}`;
+          deleteBtn.disabled = false;
+        }
+      });
+    </script>
+
+  </body>
+</html>

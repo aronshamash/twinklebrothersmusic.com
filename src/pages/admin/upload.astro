@@ -50,9 +50,15 @@ const canAnalyse = Boolean(env.ANTHROPIC_API_KEY);
 
     <!-- Top bar -->
     <header class="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-2 h-2 rounded-full bg-green-400"></div>
-        <span class="text-sm font-medium tracking-wide text-zinc-200">Twinkle Brothers — Admin</span>
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-green-400"></div>
+          <span class="text-sm font-medium tracking-wide text-zinc-200">Twinkle Brothers — Admin</span>
+        </div>
+        <nav class="flex items-center gap-4 text-sm text-zinc-500">
+          <a href="/admin/upload" class="text-white font-medium">Upload</a>
+          <a href="/admin/photos" class="hover:text-zinc-300 transition-colors">Media</a>
+        </nav>
       </div>
       <a href="/api/admin/logout" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">Sign out</a>
     </header>
