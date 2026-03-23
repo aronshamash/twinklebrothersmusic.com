@@ -8,6 +8,33 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
 ---
 
 <BaseLayout title="Photos — Twinkle Brothers">
+  <style>
+    .pswp {
+      --pswp-bg: #09090b;
+      --pswp-icon-color: #ffffff;
+      --pswp-icon-color-secondary: #71717a;
+      --pswp-icon-stroke-color: #09090b;
+      --pswp-icon-stroke-width: 1px;
+    }
+    .pswp-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 2.5rem 1.5rem 1.25rem;
+      background: linear-gradient(to top, rgba(9,9,11,0.9) 0%, transparent 100%);
+      color: #e4e4e7;
+      font-size: 0.875rem;
+      pointer-events: none;
+    }
+    .pswp-caption-title {
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+    .pswp-caption-meta {
+      color: #a1a1aa;
+      font-size: 0.75rem;
+    }
+  </style>
+
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
     <h1 class="font-display text-5xl md:text-7xl tracking-widest uppercase text-white mb-12">Photos</h1>
     {photos.length === 0 ? (
@@ -15,7 +42,13 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
     ) : (
       <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
         {photos.map((photo) => (
-          <a href={`/image/${photo.id}?from=photo`} class="block mb-4 break-inside-avoid group">
+          <div
+            class="pswp-item block mb-4 break-inside-avoid group cursor-pointer"
+            data-pswp-src={`/cdn/${photo.r2_key}`}
+            data-caption={photo.caption ?? ''}
+            data-date={formatImageDate(photo)}
+            data-credit={photo.credit ?? ''}
+          >
             <img
               src={`/cdn/${photo.r2_key}`}
               alt={photo.caption || ''}
@@ -25,9 +58,61 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
             {photo.caption && (
               <p class="text-zinc-500 text-xs mt-1 px-1">{formatImageDate(photo)}</p>
             )}
-          </a>
+          </div>
         ))}
       </div>
     )}
   </div>
+
+  <script>
+    import PhotoSwipeLightbox from 'photoswipe/lightbox';
+    import 'photoswipe/style.css';
+
+    const els = [...document.querySelectorAll<HTMLElement>('.pswp-item')];
+
+    const items = els.map(el => ({
+      src: el.dataset.pswpSrc!,
+      width: 1600,
+      height: 1200,
+      caption: el.dataset.caption ?? '',
+      date: el.dataset.date ?? '',
+      credit: el.dataset.credit ?? '',
+    }));
+
+    if (items.length > 0) {
+      const lightbox = new PhotoSwipeLightbox({
+        dataSource: items,
+        pswpModule: () => import('photoswipe'),
+        bgOpacity: 0.95,
+        padding: { top: 48, bottom: 72, left: 16, right: 16 },
+      });
+
+      lightbox.on('uiRegister', () => {
+        lightbox.pswp!.ui!.registerElement({
+          name: 'custom-caption',
+          order: 9,
+          isButton: false,
+          appendTo: 'root',
+          html: '',
+          onInit(el: HTMLElement, pswp) {
+            pswp.on('change', () => {
+              const item = items[pswp.currIndex];
+              const meta = [item.date, item.credit].filter(Boolean).join(' · ');
+              el.innerHTML = (item.caption || meta) ? `
+                <div class="pswp-caption">
+                  ${item.caption ? `<div class="pswp-caption-title">${item.caption}</div>` : ''}
+                  ${meta ? `<div class="pswp-caption-meta">${meta}</div>` : ''}
+                </div>` : '';
+            });
+          },
+        });
+      });
+
+      lightbox.init();
+
+      els.forEach((el, index) => {
+        el.addEventListener('click', () => lightbox.loadAndOpen(index));
+      });
+    }
+  </script>
 </BaseLayout>

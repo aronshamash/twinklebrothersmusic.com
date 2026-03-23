@@ -29,6 +29,9 @@ importers:
       astro:
         specifier: ^5.7.10
         version: 5.18.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      photoswipe:
+        specifier: ^5.4.4
+        version: 5.4.4
       tailwindcss:
         specifier: ^4.1.4
         version: 4.2.1
@@ -2491,6 +2494,10 @@ packages:
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
+
+  photoswipe@5.4.4:
+    resolution: {integrity: sha512-WNFHoKrkZNnvFFhbHL93WDkW3ifwVOXSW3w1UuZZelSmgXpIGiZSNlZJq37rR8YejqME2rHs9EhH9ZvlvFH2NA==}
+    engines: {node: '>= 0.12.0'}
 
   piccolore@0.1.3:
     resolution: {integrity: sha512-o8bTeDWjE086iwKrROaDf31K0qC/BENdm15/uH9usSC/uZjJOKb2YGiVHfLY4GhwsERiPI1jmwI2XrA7ACOxVw==}
@@ -5977,6 +5984,8 @@ snapshots:
   path-to-regexp@6.3.0: {}
 
   pathe@2.0.3: {}
+
+  photoswipe@5.4.4: {}
 
   piccolore@0.1.3: {}
 
