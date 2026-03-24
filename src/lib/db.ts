@@ -24,7 +24,7 @@ export async function getAllImages(env: Env): Promise<Image[]> {
 
 export async function getImagesByType(env: Env, type: string): Promise<Image[]> {
   const result = await env.DB.prepare(
-    `SELECT * FROM images WHERE type = ? ORDER BY COALESCE(event_date, taken_at, '1990-01-01') ASC`
+    `SELECT * FROM images WHERE type = ? ORDER BY COALESCE(NULLIF(event_date, ''), NULLIF(taken_at, ''), '9999-12-31') ASC`
   ).bind(type).all();
   return (result.results ?? []) as Image[];
 }
