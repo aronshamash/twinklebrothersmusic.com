@@ -85,7 +85,7 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
       dataSource: items,
       pswpModule: () => import('photoswipe'),
       bgOpacity: 1,
-      padding: { top: 40, bottom: 40, left: 8, right: 8 },
+      padding: { top: 40, bottom: 80, left: 8, right: 8 },
     });
 
     lightbox.on('uiRegister', function () {
