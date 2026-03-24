@@ -8,6 +8,8 @@ export interface Image {
   caption: string | null;
   credit: string | null;
   location: string | null;
+  width: number | null;
+  height: number | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,7 +24,7 @@ export async function getAllImages(env: Env): Promise<Image[]> {
 
 export async function getImagesByType(env: Env, type: string): Promise<Image[]> {
   const result = await env.DB.prepare(
-    `SELECT * FROM images WHERE type = ? ORDER BY COALESCE(event_date, taken_at) ASC`
+    `SELECT * FROM images WHERE type = ? ORDER BY COALESCE(event_date, taken_at, '1990-01-01') ASC`
   ).bind(type).all();
   return (result.results ?? []) as Image[];
 }
@@ -66,7 +68,7 @@ export function imageDate(image: Image): string | null {
 
 export function formatImageDate(image: Image): string {
   const dateStr = imageDate(image);
-  if (!dateStr) return 'Unknown date';
+  if (!dateStr) return '';
   const precision = image.date_precision ?? 'day';
   const date = new Date(dateStr + 'T00:00:00');
   if (precision === 'year') return date.getFullYear().toString();
