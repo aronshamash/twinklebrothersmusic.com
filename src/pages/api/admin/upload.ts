@@ -82,8 +82,8 @@ export async function POST(context: APIContext): Promise<Response> {
   const location = (formData.get('location') as string | null) || null;
   const credit = (formData.get('credit') as string | null) || null;
 
-  const takenAt = type === 'photo' ? dateRaw : null;
-  const eventDate = type === 'poster' ? dateRaw : null;
+  const takenAt = null;
+  const eventDate = dateRaw;
 
   const id = crypto.randomUUID();
   const extMatch = file.name.match(/\.[^.]+$/);

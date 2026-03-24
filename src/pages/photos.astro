@@ -5,6 +5,8 @@ import { getImagesByType, formatImageDate } from '../lib/db';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const env = (Astro.locals as any).runtime?.env;
 const photos = env ? await getImagesByType(env, 'photo') : [];
+
+const displayPhotos = photos;
 ---
 
 <BaseLayout title="Photos — Twinkle Brothers">
@@ -12,6 +14,10 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
     .pswp { --pswp-bg: #09090b; --pswp-icon-color: #fff; --pswp-icon-color-secondary: #71717a; }
     .pswp__img { object-fit: contain !important; }
     .pswp__counter { display: none !important; }
+    #masonry-grid { position: relative; }
+    .masonry-item { width: calc(25% - 12px); margin-bottom: 16px; display: block; }
+    @media (max-width: 1024px) { .masonry-item { width: calc(33.333% - 11px); } }
+    @media (max-width: 640px)  { .masonry-item { width: calc(50% - 8px); } }
   </style>
 
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
@@ -19,11 +25,11 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
     {photos.length === 0 ? (
       <p class="text-zinc-400">Photo archive coming soon.</p>
     ) : (
-      <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
-        {photos.map((photo) => (
+      <div id="masonry-grid" class="w-full">
+        {displayPhotos.map((photo) => (
           <a
             href={`/image/${photo.id}?from=photo`}
-            class="pswp-item block mb-4 break-inside-avoid group"
+            class="pswp-item masonry-item group"
             data-pswp-src={`/cdn/${photo.r2_key}`}
             data-pswp-width={photo.width ?? ''}
             data-pswp-height={photo.height ?? ''}
@@ -46,6 +52,23 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
       </div>
     )}
   </div>
+
+  <script>
+    import Masonry from 'masonry-layout';
+
+    const grid = document.getElementById('masonry-grid');
+    const msnry = new Masonry(grid!, {
+      itemSelector: '.masonry-item',
+      columnWidth: '.masonry-item',
+      gutter: 16,
+      fitWidth: true,
+    });
+
+    // Re-layout after each image loads so heights are correct
+    grid!.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+      if (!img.complete) img.addEventListener('load', () => msnry.layout!());
+    });
+  </script>
 
   <script>
     import PhotoSwipeLightbox from 'photoswipe/lightbox';

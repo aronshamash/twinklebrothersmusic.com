@@ -4,7 +4,7 @@ export interface Image {
   type: string;
   taken_at: string | null;
   event_date: string | null;
-  date_precision: 'year' | 'month' | 'day' | null;
+  date_precision: 'year' | 'month' | 'day' | 'decade' | null;
   caption: string | null;
   credit: string | null;
   location: string | null;
@@ -24,7 +24,19 @@ export async function getAllImages(env: Env): Promise<Image[]> {
 
 export async function getImagesByType(env: Env, type: string): Promise<Image[]> {
   const result = await env.DB.prepare(
-    `SELECT * FROM images WHERE type = ? ORDER BY COALESCE(NULLIF(event_date, ''), NULLIF(taken_at, ''), '9999-12-31') ASC`
+    `SELECT * FROM images WHERE type = ?
+     ORDER BY
+       CASE
+         WHEN NULLIF(event_date, '') IS NOT NULL THEN
+           CASE WHEN LENGTH(event_date) = 4 THEN event_date || '-01-01'
+                WHEN LENGTH(event_date) = 7 THEN event_date || '-01'
+                ELSE event_date END
+         WHEN NULLIF(taken_at, '') IS NOT NULL THEN
+           CASE WHEN LENGTH(taken_at) = 4 THEN taken_at || '-01-01'
+                WHEN LENGTH(taken_at) = 7 THEN taken_at || '-01'
+                ELSE taken_at END
+         ELSE '9999-12-31'
+       END ASC`
   ).bind(type).all();
   return (result.results ?? []) as Image[];
 }

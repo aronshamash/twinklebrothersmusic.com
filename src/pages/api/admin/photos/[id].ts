@@ -28,8 +28,8 @@ export async function PUT(context: APIContext): Promise<Response> {
   const location = body.location?.trim() || null;
   const credit = body.credit?.trim() || null;
 
-  const takenAt = type === 'photo' ? dateRaw : null;
-  const eventDate = type === 'poster' ? dateRaw : null;
+  const takenAt = null;
+  const eventDate = dateRaw;
 
   const result = await env.DB.prepare(
     `UPDATE images SET type = ?, caption = ?, taken_at = ?, event_date = ?, date_precision = ?, location = ?, credit = ? WHERE id = ?`
