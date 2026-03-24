@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/tour', label: 'Tour' },
   { href: '/videos', label: 'Videos' },
   { href: '/listen', label: 'Listen' },
+  { href: 'https://twinklerecords.bandcamp.com/', label: 'Shop', external: true },
   { href: '/contact', label: 'Contact' },
 ];
 ---
@@ -36,6 +37,8 @@ const navLinks = [
         <li>
           <a
             href={link.href}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
             class:list={[
               'text-sm font-medium transition-colors hover:text-accent',
               currentPath === link.href ? 'text-accent' : 'text-zinc-300',
@@ -54,6 +57,8 @@ const navLinks = [
         <li>
           <a
             href={link.href}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
             class:list={[
               'text-sm font-medium transition-colors hover:text-accent',
               currentPath === link.href ? 'text-accent' : 'text-zinc-300',
