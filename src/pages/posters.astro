@@ -25,6 +25,8 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
             href={`/image/${poster.id}?from=poster`}
             class="pswp-item group"
             data-pswp-src={`/cdn/${poster.r2_key}`}
+            data-pswp-width={poster.width ?? ''}
+            data-pswp-height={poster.height ?? ''}
             data-caption={poster.caption ?? ''}
             data-date={formatImageDate(poster)}
             data-credit={poster.credit ?? ''}
@@ -51,16 +53,22 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
 
     const els = [...document.querySelectorAll<HTMLAnchorElement>('.pswp-item')];
 
-    const items = els.map(el => ({
-      src: el.dataset.pswpSrc!,
-      width: 1200,
-      height: 1600,
-      caption: el.dataset.caption ?? '',
-      date: el.dataset.date ?? '',
-      credit: el.dataset.credit ?? '',
-    }));
+    const items = els.map(el => {
+      const storedWidth = parseInt(el.dataset.pswpWidth ?? '');
+      const storedHeight = parseInt(el.dataset.pswpHeight ?? '');
+      return {
+        src: el.dataset.pswpSrc!,
+        width: storedWidth || 1200,
+        height: storedHeight || 1600,
+        caption: el.dataset.caption ?? '',
+        date: el.dataset.date ?? '',
+        credit: el.dataset.credit ?? '',
+        hasDims: !!(storedWidth && storedHeight),
+      };
+    });
 
     els.forEach((el, index) => {
+      if (items[index].hasDims) return;
       const img = el.querySelector('img')!;
       const updateSize = () => {
         if (img.naturalWidth > 0) {
@@ -77,50 +85,63 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       dataSource: items,
       pswpModule: () => import('photoswipe'),
       bgOpacity: 1,
-      padding: { top: 40, bottom: 72, left: 8, right: 8 },
+      padding: { top: 40, bottom: 100, left: 8, right: 8 },
     });
 
-    const captionEl = document.createElement('div');
-    captionEl.style.cssText = 'position:fixed;z-index:1500;pointer-events:none;opacity:0;transition:opacity 0.15s;';
-    document.body.appendChild(captionEl);
+    lightbox.on('uiRegister', function () {
+      lightbox.pswp!.ui!.registerElement({
+        name: 'caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        html: '',
+        onInit: (el) => {
+          el.style.cssText = [
+            'position:fixed',
+            'z-index:1500',
+            'pointer-events:none',
+            'text-align:left',
+            'padding:8px 0 0',
+          ].join(';');
 
-    function positionCaption() {
-      const pswp = lightbox.pswp;
-      if (!pswp) return;
-      const item = items[pswp.currIndex];
-      captionEl.innerHTML = [
-        item.caption ? `<p style="margin:0;color:#e4e4e7;font-size:0.875rem;font-weight:500;line-height:1.5">${item.caption}</p>` : '',
-        item.date || item.credit ? `<p style="margin:0;color:#71717a;font-size:0.75rem;line-height:1.5">${[item.date, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>` : '',
-      ].join('');
+          const pswp = lightbox.pswp!;
 
-      setTimeout(() => {
-        const imgEl = pswp.currSlide?.holderElement?.querySelector('img') as HTMLImageElement | null;
-        if (!imgEl) return;
-        const rect = imgEl.getBoundingClientRect();
-        if (rect.width > 0) {
-          captionEl.style.left = rect.left + 'px';
-          captionEl.style.top = (rect.bottom + 10) + 'px';
-          captionEl.style.maxWidth = rect.width + 'px';
-          captionEl.style.opacity = '1';
-        }
-      }, 50);
-    }
+          function positionCaption() {
+            const imgEl = pswp.currSlide?.holderElement?.querySelector('img');
+            if (!imgEl) return;
+            const rect = imgEl.getBoundingClientRect();
+            const maxTop = window.innerHeight - el.offsetHeight - 4;
+            el.style.top = Math.min(rect.bottom + 8, maxTop) + 'px';
+            el.style.left = rect.left + 'px';
+            el.style.right = window.innerWidth - rect.right + 'px';
+          }
 
-    lightbox.on('change', positionCaption);
-    lightbox.on('loadComplete', positionCaption);
-    lightbox.on('close', () => { captionEl.style.opacity = '0'; });
-    lightbox.on('destroy', () => captionEl.remove());
+          function updateContent() {
+            const item = items[pswp.currIndex];
+            const captionLine = item.caption
+              ? `<p style="margin:0 0 4px;color:#e4e4e7;font-size:0.875rem;font-weight:500;line-height:1.5">${item.caption}</p>`
+              : '';
+            const metaLine = (item.date || item.credit)
+              ? `<p style="margin:0;color:#a1a1aa;font-size:0.75rem;line-height:1.5">${[item.date, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>`
+              : '';
+            el.innerHTML = captionLine + metaLine;
+            el.style.display = (captionLine || metaLine) ? 'block' : 'none';
+            requestAnimationFrame(positionCaption);
+          }
+
+          pswp.on('change', updateContent);
+          pswp.on('zoomPanUpdate', positionCaption);
+          window.addEventListener('resize', positionCaption);
+          pswp.on('destroy', () => window.removeEventListener('resize', positionCaption));
+        },
+      });
+    });
 
     lightbox.init();
 
     els.forEach((el, index) => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
-        const img = el.querySelector('img')!;
-        if (img.naturalWidth > 0) {
-          items[index].width = img.naturalWidth;
-          items[index].height = img.naturalHeight;
-        }
         lightbox.loadAndOpen(index);
       });
     });
