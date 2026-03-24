@@ -71,6 +71,7 @@ export function formatImageDate(image: Image): string {
   if (!dateStr) return '';
   const precision = image.date_precision ?? 'day';
   const date = new Date(dateStr + 'T00:00:00');
+  if (precision === 'decade') return Math.floor(date.getFullYear() / 10) * 10 + 's';
   if (precision === 'year') return date.getFullYear().toString();
   if (precision === 'month') return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long' });
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
