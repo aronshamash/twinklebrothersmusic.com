@@ -85,7 +85,7 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
       dataSource: items,
       pswpModule: () => import('photoswipe'),
       bgOpacity: 1,
-      padding: { top: 40, bottom: 80, left: 8, right: 8 },
+      padding: { top: 40, bottom: 100, left: 8, right: 8 },
     });
 
     lightbox.on('uiRegister', function () {
@@ -110,7 +110,8 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
             const imgEl = pswp.currSlide?.holderElement?.querySelector('img');
             if (!imgEl) return;
             const rect = imgEl.getBoundingClientRect();
-            el.style.top = rect.bottom + 8 + 'px';
+            const maxTop = window.innerHeight - el.offsetHeight - 4;
+            el.style.top = Math.min(rect.bottom + 8, maxTop) + 'px';
             el.style.left = rect.left + 'px';
             el.style.right = window.innerWidth - rect.right + 'px';
           }
