@@ -30,6 +30,7 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
             data-caption={photo.caption ?? ''}
             data-date={formatImageDate(photo)}
             data-credit={photo.credit ?? ''}
+            data-location={photo.location ?? ''}
           >
             <img
               src={`/cdn/${photo.r2_key}`}
@@ -62,6 +63,7 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
         caption: el.dataset.caption ?? '',
         date: el.dataset.date ?? '',
         credit: el.dataset.credit ?? '',
+        location: el.dataset.location ?? '',
         hasDims: !!(storedWidth && storedHeight),
       };
     });
@@ -121,8 +123,8 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
             const captionLine = item.caption
               ? `<p style="margin:0 0 4px;color:#e4e4e7;font-size:0.875rem;font-weight:500;line-height:1.5">${item.caption}</p>`
               : '';
-            const metaLine = (item.date || item.credit)
-              ? `<p style="margin:0;color:#a1a1aa;font-size:0.75rem;line-height:1.5">${[item.date, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>`
+            const metaLine = (item.date || item.credit || item.location)
+              ? `<p style="margin:0;color:#a1a1aa;font-size:0.75rem;line-height:1.5">${[item.date, item.location, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>`
               : '';
             el.innerHTML = captionLine + metaLine;
             el.style.display = (captionLine || metaLine) ? 'block' : 'none';
