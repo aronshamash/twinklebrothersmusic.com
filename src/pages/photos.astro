@@ -25,6 +25,8 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
             href={`/image/${photo.id}?from=photo`}
             class="pswp-item block mb-4 break-inside-avoid group"
             data-pswp-src={`/cdn/${photo.r2_key}`}
+            data-pswp-width={photo.width ?? ''}
+            data-pswp-height={photo.height ?? ''}
             data-caption={photo.caption ?? ''}
             data-date={formatImageDate(photo)}
             data-credit={photo.credit ?? ''}
@@ -50,21 +52,26 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
 
     const els = [...document.querySelectorAll<HTMLAnchorElement>('.pswp-item')];
 
-    const items = els.map(el => ({
-      src: el.dataset.pswpSrc!,
-      width: 1600,
-      height: 1200,
-      caption: el.dataset.caption ?? '',
-      date: el.dataset.date ?? '',
-      credit: el.dataset.credit ?? '',
-    }));
+    const items = els.map(el => {
+      const storedWidth = parseInt(el.dataset.pswpWidth ?? '');
+      const storedHeight = parseInt(el.dataset.pswpHeight ?? '');
+      return {
+        src: el.dataset.pswpSrc!,
+        width: storedWidth || 1600,
+        height: storedHeight || 1200,
+        caption: el.dataset.caption ?? '',
+        date: el.dataset.date ?? '',
+        credit: el.dataset.credit ?? '',
+        hasDims: !!(storedWidth && storedHeight),
+      };
+    });
 
-    // Fix aspect ratios from loaded thumbnails
+    // For images without stored dimensions, fix aspect ratios from loaded thumbnails
     els.forEach((el, index) => {
+      if (items[index].hasDims) return;
       const img = el.querySelector('img')!;
       const updateSize = () => {
         if (img.naturalWidth > 0) {
-          // Scale up thumbnail dimensions to approximate full-res size
           const scale = Math.max(1, 1600 / img.naturalWidth);
           items[index].width = Math.round(img.naturalWidth * scale);
           items[index].height = Math.round(img.naturalHeight * scale);
@@ -78,52 +85,62 @@ const photos = env ? await getImagesByType(env, 'photo') : [];
       dataSource: items,
       pswpModule: () => import('photoswipe'),
       bgOpacity: 1,
-      padding: { top: 40, bottom: 72, left: 8, right: 8 },
+      padding: { top: 40, bottom: 40, left: 8, right: 8 },
     });
 
-    // Fixed caption div positioned under the rendered image
-    const captionEl = document.createElement('div');
-    captionEl.style.cssText = 'position:fixed;z-index:1500;pointer-events:none;opacity:0;transition:opacity 0.15s;';
-    document.body.appendChild(captionEl);
+    lightbox.on('uiRegister', function () {
+      lightbox.pswp!.ui!.registerElement({
+        name: 'caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        html: '',
+        onInit: (el) => {
+          el.style.cssText = [
+            'position:fixed',
+            'z-index:1500',
+            'pointer-events:none',
+            'text-align:left',
+            'padding:8px 0 0',
+          ].join(';');
 
-    function positionCaption() {
-      const pswp = lightbox.pswp;
-      if (!pswp) return;
-      const item = items[pswp.currIndex];
-      captionEl.innerHTML = [
-        item.caption ? `<p style="margin:0;color:#e4e4e7;font-size:0.875rem;font-weight:500;line-height:1.5">${item.caption}</p>` : '',
-        item.date || item.credit ? `<p style="margin:0;color:#71717a;font-size:0.75rem;line-height:1.5">${[item.date, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>` : '',
-      ].join('');
+          const pswp = lightbox.pswp!;
 
-      setTimeout(() => {
-        const imgEl = pswp.currSlide?.holderElement?.querySelector('img') as HTMLImageElement | null;
-        if (!imgEl) return;
-        const rect = imgEl.getBoundingClientRect();
-        if (rect.width > 0) {
-          captionEl.style.left = rect.left + 'px';
-          captionEl.style.top = (rect.bottom + 10) + 'px';
-          captionEl.style.maxWidth = rect.width + 'px';
-          captionEl.style.opacity = '1';
-        }
-      }, 50);
-    }
+          function positionCaption() {
+            const imgEl = pswp.currSlide?.holderElement?.querySelector('img');
+            if (!imgEl) return;
+            const rect = imgEl.getBoundingClientRect();
+            el.style.top = rect.bottom + 8 + 'px';
+            el.style.left = rect.left + 'px';
+            el.style.right = window.innerWidth - rect.right + 'px';
+          }
 
-    lightbox.on('change', positionCaption);
-    lightbox.on('loadComplete', positionCaption);
-    lightbox.on('close', () => { captionEl.style.opacity = '0'; });
-    lightbox.on('destroy', () => captionEl.remove());
+          function updateContent() {
+            const item = items[pswp.currIndex];
+            const captionLine = item.caption
+              ? `<p style="margin:0 0 4px;color:#e4e4e7;font-size:0.875rem;font-weight:500;line-height:1.5">${item.caption}</p>`
+              : '';
+            const metaLine = (item.date || item.credit)
+              ? `<p style="margin:0;color:#a1a1aa;font-size:0.75rem;line-height:1.5">${[item.date, item.credit ? 'Credit: ' + item.credit : ''].filter(Boolean).join(' · ')}</p>`
+              : '';
+            el.innerHTML = captionLine + metaLine;
+            el.style.display = (captionLine || metaLine) ? 'block' : 'none';
+            requestAnimationFrame(positionCaption);
+          }
+
+          pswp.on('change', updateContent);
+          pswp.on('zoomPanUpdate', positionCaption);
+          window.addEventListener('resize', positionCaption);
+          pswp.on('destroy', () => window.removeEventListener('resize', positionCaption));
+        },
+      });
+    });
 
     lightbox.init();
 
     els.forEach((el, index) => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
-        // Re-read dimensions in case image loaded after init
-        const img = el.querySelector('img')!;
-        if (img.naturalWidth > 0) {
-          items[index].width = img.naturalWidth;
-          items[index].height = img.naturalHeight;
-        }
         lightbox.loadAndOpen(index);
       });
     });
