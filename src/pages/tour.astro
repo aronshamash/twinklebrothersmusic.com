@@ -13,13 +13,30 @@ const events = allEvents.filter((event) => event.confirmed.toUpperCase() === 'Y'
     {events.length === 0 ? (
       <p class="text-zinc-400">No upcoming dates at this time. Check back soon.</p>
     ) : (
-      <div class="space-y-4">
+      <div class="space-y-px">
         {events.map((event) => (
-          <div class="flex flex-col md:flex-row md:items-center gap-4 border border-white/10 rounded-xl p-6 hover:border-accent/30 transition-colors">
-            <div class="md:w-40 text-accent font-semibold text-lg shrink-0">{event.date}</div>
-            <div class="flex-1">
-              <div class="text-white font-semibold">{event.eventName}</div>
-              {event.location && <div class="text-zinc-400 text-sm mt-1">{event.location}</div>}
+          <div class="group flex flex-col md:flex-row md:items-baseline gap-1 md:gap-6 py-6 border-b border-white/5 hover:border-accent/20 transition-colors">
+            <div class="font-display text-8xl text-white/10 group-hover:text-accent/20 transition-colors leading-none shrink-0 w-36 text-right hidden md:block">
+              {event.date.split(' ')[0]}
+            </div>
+            <div class="flex-1 flex flex-col md:flex-row md:items-baseline md:justify-between gap-3">
+              <div>
+                <div class="font-display text-2xl md:text-4xl tracking-wider uppercase text-white leading-tight">{event.eventName}</div>
+                <div class="flex items-center gap-3 mt-1">
+                  <span class="text-accent text-sm font-medium">{event.date}</span>
+                  {event.location && <span class="text-zinc-500 text-sm">— {event.location}</span>}
+                </div>
+              </div>
+              {event.ticketUrl && (
+                <a
+                  href={event.ticketUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="shrink-0 border border-accent text-accent text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded hover:bg-accent hover:text-zinc-950 transition-colors self-start md:self-auto"
+                >
+                  Tickets
+                </a>
+              )}
             </div>
           </div>
         ))}
