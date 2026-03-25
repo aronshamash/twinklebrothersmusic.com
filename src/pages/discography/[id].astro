@@ -11,6 +11,7 @@ if (!releaseId || isNaN(releaseId)) {
 
 // Look up list metadata and any preferred release override from D1
 const db = Astro.locals.runtime.env.DB;
+const kv = Astro.locals.runtime.env.DISCOGS_CACHE as { get(key: string): Promise<string | null>; put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void> } | undefined;
 const [listEntryRow, overrideRow] = await Promise.all([
   db.prepare(
     'SELECT id, master_id, release_type FROM discography_releases WHERE id = ?'
@@ -27,7 +28,9 @@ const fetchType = overrideRow ? 'release' : (listEntryRow?.release_type ?? 'rele
 const release = await fetchReleaseDetail(
   fetchId,
   listEntryRow?.master_id ?? undefined,
-  fetchType
+  fetchType,
+  false,
+  kv
 );
 
 if (!release) {

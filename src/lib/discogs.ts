@@ -197,12 +197,25 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
   }
 }
 
-export async function fetchReleaseDetail(id: number, masterId?: number, releaseType: 'master' | 'release' = 'release', coversOnly = false): Promise<DiscogsReleaseDetail | null> {
+type KVStore = { get(key: string): Promise<string | null>; put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void> };
+
+export async function fetchReleaseDetail(id: number, masterId?: number, releaseType: 'master' | 'release' = 'release', coversOnly = false, kv?: KVStore): Promise<DiscogsReleaseDetail | null> {
   const token = import.meta.env.DISCOGS_TOKEN;
   if (!token) return null;
 
+  const kvKey = `discogs:${releaseType}:${id}`;
+
   // coversOnly skips versions lookup and does not write to cache (avoids poisoning detail cache with incomplete data)
   if (!coversOnly) {
+    // Check KV first (persistent across Worker invocations)
+    if (kv) {
+      try {
+        const cached = await kv.get(kvKey);
+        if (cached) return JSON.parse(cached) as DiscogsReleaseDetail;
+      } catch {
+        // fall through to Discogs
+      }
+    }
     const cached = detailCache.get(id);
     if (cached && Date.now() - cached.time < CACHE_DURATION) {
       return cached.data;
@@ -291,7 +304,12 @@ export async function fetchReleaseDetail(id: number, masterId?: number, releaseT
         : (listEntry?.format ?? ''),
     };
 
-    if (!coversOnly) detailCache.set(id, { data: detail, time: Date.now() });
+    if (!coversOnly) {
+      detailCache.set(id, { data: detail, time: Date.now() });
+      if (kv) {
+        kv.put(kvKey, JSON.stringify(detail), { expirationTtl: 7 * 24 * 60 * 60 }).catch(() => {});
+      }
+    }
     return detail;
   } catch (error) {
     console.error('Error fetching Discogs release detail:', error);

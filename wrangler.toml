@@ -10,3 +10,7 @@ database_id = "b23d6493-bb87-4285-8a0f-35606e4fc635"
 [[r2_buckets]]
 binding = "IMAGES"
 bucket_name = "twinkle-images"
+
+[[kv_namespaces]]
+binding = "DISCOGS_CACHE"
+id = "28d968934ecc42a3aa2686cb5908d484"
