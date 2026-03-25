@@ -207,8 +207,6 @@ async function fetchAllReleases(): Promise<DiscogsRelease[]> {
   }
 
   for (const release of standalones) {
-    const fmt = (release.format ?? '').toLowerCase();
-    if (fmt.includes('lp') || fmt.includes('album') || fmt.includes('comp')) continue;
     releases.push({
       id: release.id,
       title: release.title,

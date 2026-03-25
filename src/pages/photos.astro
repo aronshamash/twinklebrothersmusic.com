@@ -55,19 +55,17 @@ const displayPhotos = photos;
 
   <script>
     import Masonry from 'masonry-layout';
+    import imagesLoaded from 'imagesloaded';
 
-    const grid = document.getElementById('masonry-grid');
-    const msnry = new Masonry(grid!, {
+    const grid = document.getElementById('masonry-grid')!;
+    const msnry = new Masonry(grid, {
       itemSelector: '.masonry-item',
       columnWidth: '.masonry-item',
       gutter: 16,
       fitWidth: true,
     });
 
-    // Re-layout after each image loads so heights are correct
-    grid!.querySelectorAll<HTMLImageElement>('img').forEach(img => {
-      if (!img.complete) img.addEventListener('load', () => msnry.layout!());
-    });
+    imagesLoaded(grid).on('progress', () => msnry.layout!());
   </script>
 
   <script>

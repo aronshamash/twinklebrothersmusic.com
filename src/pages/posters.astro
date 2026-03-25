@@ -12,6 +12,10 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
     .pswp { --pswp-bg: #09090b; --pswp-icon-color: #fff; --pswp-icon-color-secondary: #71717a; }
     .pswp__img { object-fit: contain !important; }
     .pswp__counter { display: none !important; }
+    #masonry-grid { position: relative; }
+    .masonry-item { width: calc(25% - 12px); margin-bottom: 16px; display: block; }
+    @media (max-width: 1024px) { .masonry-item { width: calc(33.333% - 11px); } }
+    @media (max-width: 640px)  { .masonry-item { width: calc(50% - 8px); } }
   </style>
 
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
@@ -19,11 +23,11 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
     {posters.length === 0 ? (
       <p class="text-zinc-400">Poster archive coming soon.</p>
     ) : (
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div id="masonry-grid" class="w-full">
         {posters.map((poster) => (
           <a
             href={`/image/${poster.id}?from=poster`}
-            class="pswp-item group"
+            class="pswp-item masonry-item group"
             data-pswp-src={`/cdn/${poster.r2_key}`}
             data-pswp-width={poster.width ?? ''}
             data-pswp-height={poster.height ?? ''}
@@ -47,6 +51,21 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       </div>
     )}
   </div>
+
+  <script>
+    import Masonry from 'masonry-layout';
+    import imagesLoaded from 'imagesloaded';
+
+    const grid = document.getElementById('masonry-grid')!;
+    const msnry = new Masonry(grid, {
+      itemSelector: '.masonry-item',
+      columnWidth: '.masonry-item',
+      gutter: 16,
+      fitWidth: true,
+    });
+
+    imagesLoaded(grid).on('progress', () => msnry.layout!());
+  </script>
 
   <script>
     import PhotoSwipeLightbox from 'photoswipe/lightbox';

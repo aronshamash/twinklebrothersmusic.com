@@ -95,7 +95,7 @@ const videos = release.videos
         <div class="flex flex-col gap-2 mb-6">
           {release.label && (
             <div class="flex gap-3 text-sm">
-              <span class="text-zinc-600 w-32 shrink-0">Label</span>
+              <span class="text-zinc-600 w-16 shrink-0">Label</span>
               <span class="text-zinc-300">{release.label}</span>
             </div>
           )}
@@ -129,7 +129,7 @@ const videos = release.videos
             <div class="flex flex-col gap-2">
               {[...musiciansByRole.entries()].map(([role, names]) => (
                 <div class="flex gap-3 text-sm">
-                  <span class="text-zinc-600 w-36 shrink-0">{role}</span>
+                  <span class="text-zinc-600 w-28 shrink-0">{role}</span>
                   <span class="text-zinc-300">{names.join(', ')}</span>
                 </div>
               ))}

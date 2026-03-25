@@ -12,6 +12,8 @@ try {
             r.format, r.release_type
      FROM discography_releases r
      LEFT JOIN discography_image_overrides o ON o.release_id = r.id
+     LEFT JOIN discography_exclusions e ON e.release_id = r.id
+     WHERE e.release_id IS NULL
      ORDER BY r.year ASC`
   ).all();
   if (result.results.length > 0) {
@@ -52,6 +54,7 @@ const KNOWN_ALBUM_MASTER_IDS = new Set([
   1020249, // New Songs For Jah (1989)
   413053,  // Dub Massacre Part 1 & 2 (1989)
   305513,  // Free Africa (1990)
+  2517239, // Unification (1990)
   850358,  // The Age Of Reggae (1990)
   220935,  // Countrymen (1980)
   247513,  // Me No You - You No Me (1981)
