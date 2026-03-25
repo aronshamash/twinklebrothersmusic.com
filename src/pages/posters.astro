@@ -111,6 +111,33 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
 
     lightbox.on('uiRegister', function () {
       lightbox.pswp!.ui!.registerElement({
+        name: 'share-button',
+        order: 8,
+        isButton: true,
+        appendTo: 'bar',
+        html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
+        onClick: (_event, _el, pswp) => {
+          const item = items[pswp!.currIndex];
+          const shareText = `${item.caption ? item.caption + ' — ' : ''}From the Twinkle Brothers archive. Follow @thetwinklebrothers on Instagram.`;
+          if (navigator.share) {
+            navigator.share({
+              title: item.caption || 'Twinkle Brothers Archive',
+              text: shareText,
+              url: window.location.href,
+            }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+              const toast = document.createElement('div');
+              toast.textContent = 'Link copied';
+              toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#f59e0b;color:#09090b;font-size:0.875rem;font-weight:600;padding:8px 16px;border-radius:6px;z-index:9999;pointer-events:none';
+              document.body.appendChild(toast);
+              setTimeout(() => toast.remove(), 2000);
+            });
+          }
+        },
+      });
+
+      lightbox.pswp!.ui!.registerElement({
         name: 'caption',
         order: 9,
         isButton: false,
