@@ -5,7 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 <BaseLayout title="Twinkle Brothers — Reggae Legends Since 1962">
   <!-- Hero -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+  <section class="relative flex items-center justify-center overflow-hidden pt-32 pb-16">
     <div class="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900/80 to-zinc-950 z-10"></div>
     <div class="relative z-20 text-center px-6 max-w-4xl mx-auto">
       <h1 class="font-display text-6xl md:text-8xl lg:text-9xl tracking-widest uppercase text-white mb-6">
@@ -33,75 +33,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </p>
     <a href="/history" class="text-accent hover:text-accent-light transition-colors font-medium">
       Read the full history →
-    </a>
-  </section>
-
-  <!-- Latest Images -->
-  <section class="max-w-6xl mx-auto px-6 pb-20">
-    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Archive</h2>
-    <p class="text-zinc-400 mb-6">Photo archive coming soon — adding images from six decades of touring.</p>
-    <a href="/timeline" class="text-accent hover:text-accent-light transition-colors font-medium">
-      Browse the timeline →
-    </a>
-  </section>
-
-  <!-- Instagram CTA -->
-  <section class="max-w-4xl mx-auto px-6 pb-20">
-    <div class="border border-white/10 rounded-xl p-8 md:p-12 text-center bg-zinc-900/40">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-10 h-10 text-accent mx-auto mb-4" aria-hidden="true">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-      </svg>
-      <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mb-3">Follow on Instagram</h2>
-      <p class="text-zinc-400 mb-6">Archive photos, tour updates, and six decades of reggae history.</p>
-      <a
-        href="https://www.instagram.com/thetwinklebrothers/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 bg-accent text-zinc-950 font-semibold px-6 py-3 rounded hover:bg-amber-400 transition-colors"
-      >
-        @thetwinklebrothers
-      </a>
-    </div>
-  </section>
-
-  <!-- Spotify Embed -->
-  <section class="max-w-4xl mx-auto px-6 pb-20">
-    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Listen</h2>
-    <div class="rounded-xl overflow-hidden">
-      <iframe
-        style="border-radius:12px"
-        src="https://open.spotify.com/embed/artist/129UGN7LRFtvMzCf0h2Y8s?utm_source=generator&theme=0"
-        width="100%"
-        height="352"
-        frameborder="0"
-        allowfullscreen
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-      ></iframe>
-    </div>
-  </section>
-
-  <!-- Bandcamp Embed -->
-  <section class="max-w-4xl mx-auto px-6 pb-20">
-    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Buy Music</h2>
-    <div class="bg-zinc-900 rounded-xl p-6">
-      <p class="text-zinc-400 mb-4">Support the Twinkle Brothers directly on Bandcamp.</p>
-      <!-- Replace with actual Bandcamp embed code -->
-      <a href="https://twinklebrothers.bandcamp.com" target="_blank" rel="noopener noreferrer"
-         class="inline-block bg-accent text-zinc-950 font-semibold px-6 py-3 rounded hover:bg-accent-light transition-colors">
-        Visit Bandcamp
-      </a>
-    </div>
-  </section>
-
-  <!-- Featured Tour Date -->
-  <section class="max-w-4xl mx-auto px-6 pb-20">
-    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">On Tour</h2>
-    <p class="text-zinc-400 mb-4">See upcoming dates and book tickets.</p>
-    <a href="/tour" class="text-accent hover:text-accent-light transition-colors font-medium">
-      View all tour dates →
     </a>
   </section>
 </BaseLayout>
