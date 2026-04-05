@@ -47,7 +47,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 18.75l7.437-13.5H24l-7.438 13.5z"/></svg>
         Latest Album — Supernatural Forces
       </h2>
-      <iframe style="border: 0; width: 100%; max-width: 700px; height: 600px; display: block;" src="https://bandcamp.com/EmbeddedPlayer/album=1305867890/size=large/bgcol=111111/linkcol=e8a400/tracklist=true/artwork=big/transparent=true/" seamless></iframe>
+      <div class="flex items-center gap-6 p-5 bg-white/[0.03] border border-white/[0.07] rounded-xl">
+        <img
+          src="https://f4.bcbits.com/img/a3023933043_10.jpg"
+          alt="Supernatural Forces album cover"
+          width="112"
+          height="112"
+          class="rounded-lg flex-shrink-0 object-cover"
+        />
+        <div class="min-w-0">
+          <p class="text-[0.6rem] tracking-[0.2em] uppercase text-zinc-500 mb-1">Latest Album</p>
+          <h3 class="font-display text-2xl tracking-wider text-white leading-tight mb-2">Supernatural Forces</h3>
+          <p class="text-sm text-zinc-400 mb-4">Available on Bandcamp — stream, download, or buy physical</p>
+          <a
+            href="https://twinklerecords.bandcamp.com/album/supernatural-forces"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] uppercase bg-accent text-zinc-950 px-4 py-2 rounded hover:bg-accent-light transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 18.75l7.437-13.5H24l-7.438 13.5z"/></svg>
+            Listen on Bandcamp
+          </a>
+        </div>
+      </div>
     </section>
   </div>
 </BaseLayout>

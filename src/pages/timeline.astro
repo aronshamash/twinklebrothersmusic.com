@@ -6,7 +6,7 @@ import { getAllImages, imageDate, formatImageDate, type Image } from '../lib/db'
 const env = (Astro.locals as any).runtime?.env;
 const images: Image[] = env ? await getAllImages(env) : [];
 
-const THRESHOLD = 50;
+const THRESHOLD = 300;
 const useDotTimeline = images.length >= THRESHOLD;
 
 // --- Year-bucketed masonry (< 50 images) ---
