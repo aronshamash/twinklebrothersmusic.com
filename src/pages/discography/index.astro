@@ -111,7 +111,13 @@ function classifyFormat(format: string, masterId?: number): 'album' | 'single' |
 function groupByDecade(items: DiscogsRelease[]): Map<string, DiscogsRelease[]> {
   const map = new Map<string, DiscogsRelease[]>();
   for (const item of items) {
-    const decade = item.year > 0 ? `${Math.floor(item.year / 10) * 10}s` : 'Unknown';
+    let decade: string;
+    if (item.year <= 0) {
+      decade = 'Unknown';
+    } else {
+      const d = Math.floor(item.year / 10) * 10;
+      decade = (d === 1960 || d === 1970) ? '1960s & 1970s' : `${d}s`;
+    }
     if (!map.has(decade)) map.set(decade, []);
     map.get(decade)!.push(item);
   }
@@ -147,7 +153,7 @@ const albumCovers = new Map<number, string>();
           return (
             <div class="mb-20">
               <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mb-10 border-b border-zinc-800 pb-6">
-                The {decade}
+                {decade.includes('&') ? decade : `The ${decade}`}
               </h2>
               {decadeAlbums.length > 0 && (
                 <div class="mb-8">
