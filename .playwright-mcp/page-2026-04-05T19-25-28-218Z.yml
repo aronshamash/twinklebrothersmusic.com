@@ -1,0 +1,137 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "Twinkle Brothers" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - list [ref=e6]:
+          - listitem [ref=e7]:
+            - link "Tour" [ref=e8] [cursor=pointer]:
+              - /url: /tour
+          - listitem [ref=e9]:
+            - link "Discography" [ref=e10] [cursor=pointer]:
+              - /url: /discography
+          - listitem [ref=e11]:
+            - link "Listen" [ref=e12] [cursor=pointer]:
+              - /url: /listen
+          - listitem [ref=e13]:
+            - link "Video" [ref=e14] [cursor=pointer]:
+              - /url: /videos
+          - listitem [ref=e15]:
+            - link "Photos" [ref=e16] [cursor=pointer]:
+              - /url: /photos
+          - listitem [ref=e17]:
+            - link "Posters" [ref=e18] [cursor=pointer]:
+              - /url: /posters
+          - listitem [ref=e19]:
+            - link "History" [ref=e20] [cursor=pointer]:
+              - /url: /history
+          - listitem [ref=e21]:
+            - link "Timeline" [ref=e22] [cursor=pointer]:
+              - /url: /timeline
+          - listitem [ref=e23]:
+            - link "Shop" [ref=e24] [cursor=pointer]:
+              - /url: https://twinklerecords.bandcamp.com/
+          - listitem [ref=e25]:
+            - link "Contact" [ref=e26] [cursor=pointer]:
+              - /url: /contact
+        - generic [ref=e27]:
+          - link "Instagram" [ref=e28] [cursor=pointer]:
+            - /url: https://www.instagram.com/thetwinklebrothers/
+            - img [ref=e29]
+          - link "Spotify" [ref=e33] [cursor=pointer]:
+            - /url: https://open.spotify.com/artist/129UGN7LRFtvMzCf0h2Y8s
+            - img [ref=e34]
+          - link "Bandcamp" [ref=e36] [cursor=pointer]:
+            - /url: https://twinklerecords.bandcamp.com/
+            - img [ref=e37]
+          - link "YouTube" [ref=e39] [cursor=pointer]:
+            - /url: https://www.youtube.com/@TheTwinkleBrothers
+            - img [ref=e40]
+  - main [ref=e42]:
+    - generic [ref=e46]:
+      - heading "Live Shows" [level=1] [ref=e47]
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - generic [ref=e50]: "30"
+          - generic [ref=e52]:
+            - generic [ref=e53]: Twinkle Brothers + Trebunie
+            - generic [ref=e54]:
+              - generic [ref=e55]: 30 May 2026
+              - generic [ref=e56]: — Poland
+        - generic [ref=e57]:
+          - generic [ref=e58]: "19"
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - generic [ref=e61]: Reggae Dub Nation
+              - generic [ref=e62]:
+                - generic [ref=e63]: 19 June 2026
+                - generic [ref=e64]: — Limoges, France
+            - link "Tickets" [ref=e65] [cursor=pointer]:
+              - /url: https://www.ticketmaster.fr/en/manifestation/reggae-dub-nation-festival-ticket/idmanif/649590
+        - generic [ref=e66]:
+          - generic [ref=e67]: "4"
+          - generic [ref=e69]:
+            - generic [ref=e70]: Musique et Terrasses
+            - generic [ref=e71]:
+              - generic [ref=e72]: 4 July 2026
+              - generic [ref=e73]: — Verdun, France
+  - contentinfo [ref=e74]:
+    - generic [ref=e75]:
+      - generic [ref=e76]:
+        - generic [ref=e77]:
+          - heading "Twinkle Brothers" [level=3] [ref=e78]
+          - paragraph [ref=e79]:
+            - text: Reggae legends since 1962.
+            - text: The definitive digital archive.
+        - generic [ref=e80]:
+          - heading "Navigation" [level=4] [ref=e81]
+          - list [ref=e82]:
+            - listitem [ref=e83]:
+              - link "Tour" [ref=e84] [cursor=pointer]:
+                - /url: /tour
+            - listitem [ref=e85]:
+              - link "Discography" [ref=e86] [cursor=pointer]:
+                - /url: /discography
+            - listitem [ref=e87]:
+              - link "Listen" [ref=e88] [cursor=pointer]:
+                - /url: /listen
+            - listitem [ref=e89]:
+              - link "Video" [ref=e90] [cursor=pointer]:
+                - /url: /videos
+            - listitem [ref=e91]:
+              - link "Photos" [ref=e92] [cursor=pointer]:
+                - /url: /photos
+            - listitem [ref=e93]:
+              - link "Posters" [ref=e94] [cursor=pointer]:
+                - /url: /posters
+            - listitem [ref=e95]:
+              - link "History" [ref=e96] [cursor=pointer]:
+                - /url: /history
+            - listitem [ref=e97]:
+              - link "Timeline" [ref=e98] [cursor=pointer]:
+                - /url: /timeline
+        - generic [ref=e99]:
+          - heading "Connect" [level=4] [ref=e100]
+          - list [ref=e101]:
+            - listitem [ref=e102]:
+              - link "Instagram" [ref=e103] [cursor=pointer]:
+                - /url: https://www.instagram.com/thetwinklebrothers/
+                - img [ref=e104]
+                - text: Instagram
+            - listitem [ref=e108]:
+              - link "Spotify" [ref=e109] [cursor=pointer]:
+                - /url: https://open.spotify.com/artist/129UGN7LRFtvMzCf0h2Y8s
+                - img [ref=e110]
+                - text: Spotify
+            - listitem [ref=e112]:
+              - link "Bandcamp" [ref=e113] [cursor=pointer]:
+                - /url: https://twinklerecords.bandcamp.com/
+                - img [ref=e114]
+                - text: Bandcamp
+            - listitem [ref=e116]:
+              - link "YouTube" [ref=e117] [cursor=pointer]:
+                - /url: https://www.youtube.com/@TheTwinkleBrothers
+                - img [ref=e118]
+                - text: YouTube
+      - generic [ref=e120]: © 2026 Twinkle Brothers. All rights reserved.

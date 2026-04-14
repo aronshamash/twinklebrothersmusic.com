@@ -102,6 +102,17 @@ export async function POST(context: APIContext): Promise<Response> {
     httpMetadata: { contentType },
   });
 
+  // Store thumbnail if provided by the client
+  const thumbFile = formData.get('thumb') as File | null;
+  if (thumbFile) {
+    const thumbExt = (r2Key.lastIndexOf('.') !== -1 ? r2Key.slice(0, r2Key.lastIndexOf('.')) : r2Key);
+    const thumbR2Key = `${thumbExt}-thumb.webp`;
+    const thumbBuffer = await thumbFile.arrayBuffer();
+    await env.IMAGES.put(thumbR2Key, thumbBuffer, {
+      httpMetadata: { contentType: 'image/webp' },
+    });
+  }
+
   await env.DB.prepare(
     'INSERT INTO images (id, r2_key, type, taken_at, event_date, date_precision, caption, credit, location, width, height) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).bind(id, r2Key, type, takenAt, eventDate, datePrecision, caption, credit, location, dims?.width ?? null, dims?.height ?? null).run();

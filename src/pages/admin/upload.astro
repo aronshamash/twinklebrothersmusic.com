@@ -257,6 +257,23 @@ const canAnalyse = Boolean(env.ANTHROPIC_API_KEY);
       }
     }
 
+    async function generateThumbnail(file: File, maxWidth = 700): Promise<Blob | null> {
+      try {
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, maxWidth / bitmap.width);
+        const canvas = new OffscreenCanvas(
+          Math.round(bitmap.width * scale),
+          Math.round(bitmap.height * scale),
+        );
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        bitmap.close();
+        return canvas.convertToBlob({ type: 'image/webp', quality: 0.82 });
+      } catch {
+        return null;
+      }
+    }
+
     uploadBtn.addEventListener('click', async () => {
       const pending = queue.filter(queueItem => queueItem.status === 'pending');
       if (pending.length === 0) return;
@@ -270,8 +287,11 @@ const canAnalyse = Boolean(env.ANTHROPIC_API_KEY);
 
         setCardStatus(item.id, 'uploading');
 
+        const thumb = await generateThumbnail(item.file);
+
         const form = new FormData();
         form.append('file', item.file);
+        if (thumb) form.append('thumb', thumb, 'thumb.webp');
         form.append('type', get('type'));
         form.append('caption', get('caption'));
         form.append('date', get('date'));

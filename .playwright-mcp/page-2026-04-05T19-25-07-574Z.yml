@@ -1,0 +1,123 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - link "Twinkle Brothers" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]:
+        - list [ref=e6]:
+          - listitem [ref=e7]:
+            - link "Tour" [ref=e8] [cursor=pointer]:
+              - /url: /tour
+          - listitem [ref=e9]:
+            - link "Discography" [ref=e10] [cursor=pointer]:
+              - /url: /discography
+          - listitem [ref=e11]:
+            - link "Listen" [ref=e12] [cursor=pointer]:
+              - /url: /listen
+          - listitem [ref=e13]:
+            - link "Video" [ref=e14] [cursor=pointer]:
+              - /url: /videos
+          - listitem [ref=e15]:
+            - link "Photos" [ref=e16] [cursor=pointer]:
+              - /url: /photos
+          - listitem [ref=e17]:
+            - link "Posters" [ref=e18] [cursor=pointer]:
+              - /url: /posters
+          - listitem [ref=e19]:
+            - link "History" [ref=e20] [cursor=pointer]:
+              - /url: /history
+          - listitem [ref=e21]:
+            - link "Timeline" [ref=e22] [cursor=pointer]:
+              - /url: /timeline
+          - listitem [ref=e23]:
+            - link "Shop" [ref=e24] [cursor=pointer]:
+              - /url: https://twinklerecords.bandcamp.com/
+          - listitem [ref=e25]:
+            - link "Contact" [ref=e26] [cursor=pointer]:
+              - /url: /contact
+        - generic [ref=e27]:
+          - link "Instagram" [ref=e28] [cursor=pointer]:
+            - /url: https://www.instagram.com/thetwinklebrothers/
+            - img [ref=e29]
+          - link "Spotify" [ref=e33] [cursor=pointer]:
+            - /url: https://open.spotify.com/artist/129UGN7LRFtvMzCf0h2Y8s
+            - img [ref=e34]
+          - link "Bandcamp" [ref=e36] [cursor=pointer]:
+            - /url: https://twinklerecords.bandcamp.com/
+            - img [ref=e37]
+          - link "YouTube" [ref=e39] [cursor=pointer]:
+            - /url: https://www.youtube.com/@TheTwinkleBrothers
+            - img [ref=e40]
+  - main [ref=e42]:
+    - generic [ref=e45]:
+      - heading "Twinkle Brothers" [level=1] [ref=e46]
+      - paragraph [ref=e47]: Reggae legends from Falmouth, Jamaica. Six decades of conscious music, spiritual conviction, and international touring.
+      - generic [ref=e48]:
+        - link "Our Story" [ref=e49] [cursor=pointer]:
+          - /url: /history
+        - link "Discography" [ref=e50] [cursor=pointer]:
+          - /url: /discography
+    - generic [ref=e51]:
+      - heading "The Story" [level=2] [ref=e52]
+      - paragraph [ref=e53]: Founded in 1962 by brothers Norman and Ralston Grant in Falmouth, Jamaica, the Twinkle Brothers became one of reggae's most significant and enduring acts. Known for uncompromising Rastafarian consciousness and deeply spiritual lyrics, they have toured the world for over six decades.
+      - link "Read the full history →" [ref=e54] [cursor=pointer]:
+        - /url: /history
+  - contentinfo [ref=e55]:
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - heading "Twinkle Brothers" [level=3] [ref=e59]
+          - paragraph [ref=e60]:
+            - text: Reggae legends since 1962.
+            - text: The definitive digital archive.
+        - generic [ref=e61]:
+          - heading "Navigation" [level=4] [ref=e62]
+          - list [ref=e63]:
+            - listitem [ref=e64]:
+              - link "Tour" [ref=e65] [cursor=pointer]:
+                - /url: /tour
+            - listitem [ref=e66]:
+              - link "Discography" [ref=e67] [cursor=pointer]:
+                - /url: /discography
+            - listitem [ref=e68]:
+              - link "Listen" [ref=e69] [cursor=pointer]:
+                - /url: /listen
+            - listitem [ref=e70]:
+              - link "Video" [ref=e71] [cursor=pointer]:
+                - /url: /videos
+            - listitem [ref=e72]:
+              - link "Photos" [ref=e73] [cursor=pointer]:
+                - /url: /photos
+            - listitem [ref=e74]:
+              - link "Posters" [ref=e75] [cursor=pointer]:
+                - /url: /posters
+            - listitem [ref=e76]:
+              - link "History" [ref=e77] [cursor=pointer]:
+                - /url: /history
+            - listitem [ref=e78]:
+              - link "Timeline" [ref=e79] [cursor=pointer]:
+                - /url: /timeline
+        - generic [ref=e80]:
+          - heading "Connect" [level=4] [ref=e81]
+          - list [ref=e82]:
+            - listitem [ref=e83]:
+              - link "Instagram" [ref=e84] [cursor=pointer]:
+                - /url: https://www.instagram.com/thetwinklebrothers/
+                - img [ref=e85]
+                - text: Instagram
+            - listitem [ref=e89]:
+              - link "Spotify" [ref=e90] [cursor=pointer]:
+                - /url: https://open.spotify.com/artist/129UGN7LRFtvMzCf0h2Y8s
+                - img [ref=e91]
+                - text: Spotify
+            - listitem [ref=e93]:
+              - link "Bandcamp" [ref=e94] [cursor=pointer]:
+                - /url: https://twinklerecords.bandcamp.com/
+                - img [ref=e95]
+                - text: Bandcamp
+            - listitem [ref=e97]:
+              - link "YouTube" [ref=e98] [cursor=pointer]:
+                - /url: https://www.youtube.com/@TheTwinkleBrothers
+                - img [ref=e99]
+                - text: YouTube
+      - generic [ref=e101]: © 2026 Twinkle Brothers. All rights reserved.

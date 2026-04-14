@@ -1,0 +1,9 @@
+[     184ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ https://twinkle-brothers-site.pages.dev/listen/:4
+[    1243ms] [LOG] 20:33:25.784: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-a611d1eb0e5ca7388beec9093f81813c.js:0
+[    1255ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2fd8d3e0ca4ebe03fd7a3b7d60fa3671.js:0
+[   10116ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2fd8d3e0ca4ebe03fd7a3b7d60fa3671.js:0
+[   10116ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2fd8d3e0ca4ebe03fd7a3b7d60fa3671.js:0
+[   10135ms] [LOG] 20:33:34.678: ErrorCollector: enabled @ https://s4.bcbits.com/client-bundle/1/trackpipe/embedded_player-a611d1eb0e5ca7388beec9093f81813c.js:0
+[   10144ms] [INFO] user not opted in: skipping Tracker record. @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2fd8d3e0ca4ebe03fd7a3b7d60fa3671.js:0
+[   80337ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2fd8d3e0ca4ebe03fd7a3b7d60fa3671.js:0
+[   80338ms] [INFO] no events to send @ https://s4.bcbits.com/client-bundle/1/Tracker_1/impl-2fd8d3e0ca4ebe03fd7a3b7d60fa3671.js:0

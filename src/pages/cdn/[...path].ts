@@ -10,7 +10,17 @@ export const GET: APIRoute = async ({ params, locals }) => {
     return new Response('Storage not available', { status: 503 });
   }
 
-  const object = await env.IMAGES.get(key);
+  let object = await env.IMAGES.get(key);
+
+  // Thumbnail fallback: if the thumb doesn't exist yet, serve the original
+  if (!object && key.endsWith('-thumb.webp')) {
+    const base = key.slice(0, -'-thumb.webp'.length);
+    for (const ext of ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.tiff']) {
+      object = await env.IMAGES.get(base + ext);
+      if (object) break;
+    }
+  }
+
   if (!object) return new Response('Not found', { status: 404 });
 
   return new Response(object.body, {
