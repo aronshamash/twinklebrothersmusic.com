@@ -187,6 +187,27 @@ const displayPhotos = photos;
       });
     });
 
+    // Extract photo IDs from hrefs so the URL stays stable regardless of index
+    const photoIds = els.map(el => {
+      const match = el.getAttribute('href')?.match(/\/image\/([^?]+)/);
+      return match?.[1] ?? null;
+    });
+
+    lightbox.on('change', () => {
+      const id = photoIds[lightbox.pswp!.currIndex];
+      if (id) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('photo', id);
+        history.replaceState({}, '', url.toString());
+      }
+    });
+
+    lightbox.on('close', () => {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('photo');
+      history.replaceState({}, '', url.toString());
+    });
+
     lightbox.init();
 
     els.forEach((el, index) => {
@@ -195,5 +216,14 @@ const displayPhotos = photos;
         lightbox.loadAndOpen(index);
       });
     });
+
+    // Deep-link: open directly to a photo if URL has ?photo=<id>
+    const linkedPhotoId = new URL(window.location.href).searchParams.get('photo');
+    if (linkedPhotoId) {
+      const linkedIndex = photoIds.indexOf(linkedPhotoId);
+      if (linkedIndex !== -1) {
+        lightbox.loadAndOpen(linkedIndex);
+      }
+    }
   </script>
 </BaseLayout>
