@@ -1,14 +1,18 @@
 ---
+interface Props {
+  activeSection?: string;
+}
+const { activeSection } = Astro.props;
 const currentPath = Astro.url.pathname;
 
 const navLinks = [
   { href: '/tour', label: 'Tour' },
   { href: '/discography', label: 'Discography' },
-  { href: '/listen', label: 'Listen' },
+  { href: '/history', label: 'History' },
   { href: '/videos', label: 'Video' },
   { href: '/photos', label: 'Photos' },
   { href: '/posters', label: 'Posters' },
-  { href: '/history', label: 'History' },
+  { href: '/listen', label: 'Listen' },
   { href: '/timeline', label: 'Timeline' },
   { href: 'https://twinklerecords.bandcamp.com/', label: 'Shop', external: true },
   { href: '/contact', label: 'Contact' },
@@ -41,7 +45,7 @@ const navLinks = [
               rel={link.external ? 'noopener noreferrer' : undefined}
               class:list={[
                 'text-sm font-medium transition-colors hover:text-accent',
-                currentPath === link.href ? 'text-accent' : 'text-zinc-300',
+                (currentPath === link.href || currentPath.startsWith(link.href + '/') || activeSection === link.href) ? 'text-accent' : 'text-zinc-300',
               ]}
             >
               {link.label}
@@ -76,7 +80,7 @@ const navLinks = [
             rel={link.external ? 'noopener noreferrer' : undefined}
             class:list={[
               'text-sm font-medium transition-colors hover:text-accent',
-              currentPath === link.href ? 'text-accent' : 'text-zinc-300',
+              (currentPath === link.href || currentPath.startsWith(link.href + '/') || activeSection === link.href) ? 'text-accent' : 'text-zinc-300',
             ]}
           >
             {link.label}
