@@ -7,6 +7,7 @@ import { thumbKey } from '../lib/thumbKey';
 const env = (Astro.locals as any).runtime?.env;
 const roxyPoster = env ? await getImageById(env, '3a8c4737-a339-48e2-b21b-b927a957b7f5') : null;
 const earlyYearsPhoto = env ? await getImageById(env, '3daadd55-647d-484f-a4ba-79d74b91e91a') : null;
+const legacyPhoto = env ? await getImageById(env, 'f1b4484b-6718-4b1f-8447-e00532099499') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -222,13 +223,20 @@ const earlyYearsPhoto = env ? await getImageById(env, '3daadd55-647d-484f-a4ba-7
       </p>
     </div>
 
-    <!-- IMAGE PLACEHOLDER: Current live photo -->
-    <!-- Suggested: recent live shot of full band -->
-    <figure class="not-prose my-12">
-      <div class="bg-zinc-900 border border-zinc-800 rounded aspect-video flex items-center justify-center">
-        <span class="text-zinc-600 text-sm">[ Photo: Twinkle Brothers live, current lineup ]</span>
-      </div>
-    </figure>
+    {legacyPhoto ? (
+      <figure class="not-prose my-12">
+        <a href={`/image/${legacyPhoto.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(legacyPhoto.r2_key)}`}
+            alt={legacyPhoto.caption || ''}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        {legacyPhoto.caption && (
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{legacyPhoto.caption}</figcaption>
+        )}
+      </figure>
+    ) : null}
 
 
   </div>
