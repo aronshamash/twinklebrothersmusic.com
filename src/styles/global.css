@@ -17,7 +17,11 @@
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Bebas Neue', 'Inter', system-ui, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-serif: 'Lora', Georgia, serif;
+
+  --color-clay: #b87355;
+  --color-clay-light: #cc9070;
+  --color-clay-dark: #9a5f3f;
 }
 
 html {
