@@ -1,6 +1,11 @@
 ---
-export const prerender = true;
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getImageById } from '../lib/db';
+import { thumbKey } from '../lib/thumbKey';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const env = (Astro.locals as any).runtime?.env;
+const roxyPoster = env ? await getImageById(env, '3a8c4737-a339-48e2-b21b-b927a957b7f5') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -117,12 +122,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </p>
     </div>
 
-    <!-- IMAGE PLACEHOLDER: Roxy LA or Sunsplash 1982 -->
-    <figure class="not-prose my-12">
-      <div class="bg-zinc-900 border border-zinc-800 rounded aspect-video flex items-center justify-center">
-        <span class="text-zinc-600 text-sm">[ Photo: Reggae Sunsplash, Jarrett Park, Montego Bay, August 1982 ]</span>
-      </div>
-    </figure>
+    {roxyPoster ? (
+      <figure class="not-prose my-12">
+        <a href={`/image/${roxyPoster.id}?from=poster`}>
+          <img
+            src={`/cdn/${thumbKey(roxyPoster.r2_key)}`}
+            alt={roxyPoster.caption || 'Twinkle Brothers first US performance poster, Roxy LA 1982'}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        {roxyPoster.caption && (
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{roxyPoster.caption}</figcaption>
+        )}
+      </figure>
+    ) : (
+      <figure class="not-prose my-12">
+        <div class="bg-zinc-900 border border-zinc-800 rounded aspect-video flex items-center justify-center">
+          <span class="text-zinc-600 text-sm">[ Poster: Twinkle Brothers first US performance, Roxy LA 1982 ]</span>
+        </div>
+      </figure>
+    )}
 
     <!-- SECTION: ENGLAND -->
     <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mt-16 mb-6">England</h2>
