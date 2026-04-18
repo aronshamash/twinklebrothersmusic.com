@@ -8,6 +8,7 @@ const env = (Astro.locals as any).runtime?.env;
 const roxyPoster = env ? await getImageById(env, '3a8c4737-a339-48e2-b21b-b927a957b7f5') : null;
 const earlyYearsPhoto = env ? await getImageById(env, '3daadd55-647d-484f-a4ba-79d74b91e91a') : null;
 const legacyPhoto = env ? await getImageById(env, 'f1b4484b-6718-4b1f-8447-e00532099499') : null;
+const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e0cf324') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -167,6 +168,21 @@ const legacyPhoto = env ? await getImageById(env, 'f1b4484b-6718-4b1f-8447-e0053
         After America and Sunsplash, Norman made England his permanent home. His friendship with <a href="https://en.wikipedia.org/wiki/Jah_Shaka" target="_blank" rel="noopener" class="text-accent hover:text-accent-light">Jah Shaka</a> by then went back years. Shaka, born Neville Powell in Clarendon Parish, Jamaica, ran the most significant sound system operation in British reggae history out of South East London. His dances had become a kind of institution. Followers included people from Public Image Ltd and the Slits, and his influence ran forward into jungle, drum and bass, and dubstep. NME journalist Vivien Goldman described a Shaka dance in 1981: "When the other sounds had done with their boasting and toasting, there would come a discreet hiss from the corner, and Shaka would mutter a title, and the walls seemed to be tumbling down around your ears." He ran the Culture Shop in New Cross, a community hub combining a record store, Caribbean food, and a Rastafari hair salon. The Twinkle Brothers were part of his regular selection; Norman a constant presence at his dances. The two collaborated in the early 1980s on "Revelation 18", a landmark of UK roots. When Polish radio journalist Władek Kliszcz came to London in 1986 seeking Jamaican artists, it was at Jah Shaka's shop that he and Norman first met. That same year, Norman took up residency in the UK.
       </p>
     </div>
+
+    {shakaPhoto ? (
+      <figure class="not-prose my-12">
+        <a href={`/image/${shakaPhoto.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(shakaPhoto.r2_key)}`}
+            alt={shakaPhoto.caption || ''}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        {shakaPhoto.caption && (
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{shakaPhoto.caption}</figcaption>
+        )}
+      </figure>
+    ) : null}
 
     <!-- SECTION: POLAND -->
     <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mt-16 mb-6">Poland: An Unlikely Meeting of Cultures</h2>
