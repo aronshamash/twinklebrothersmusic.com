@@ -6,6 +6,7 @@ import { thumbKey } from '../lib/thumbKey';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const env = (Astro.locals as any).runtime?.env;
 const roxyPoster = env ? await getImageById(env, '3a8c4737-a339-48e2-b21b-b927a957b7f5') : null;
+const earlyYearsPhoto = env ? await getImageById(env, '3daadd55-647d-484f-a4ba-79d74b91e91a') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -45,11 +46,20 @@ const roxyPoster = env ? await getImageById(env, '3a8c4737-a339-48e2-b21b-b927a9
 
     <!-- IMAGE PLACEHOLDER: Early Falmouth / Jamaica compound life -->
     <!-- Suggested: archival photo of Falmouth, or early portrait of the brothers -->
-    <figure class="not-prose my-12">
-      <div class="bg-zinc-900 border border-zinc-800 rounded aspect-video flex items-center justify-center">
-        <span class="text-zinc-600 text-sm">[ Photo: early portrait or Falmouth, Jamaica ]</span>
-      </div>
-    </figure>
+    {earlyYearsPhoto ? (
+      <figure class="not-prose my-12">
+        <a href={`/image/${earlyYearsPhoto.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(earlyYearsPhoto.r2_key)}`}
+            alt={earlyYearsPhoto.caption || ''}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        {earlyYearsPhoto.caption && (
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{earlyYearsPhoto.caption}</figcaption>
+        )}
+      </figure>
+    ) : null}
 
     <!-- SECTION: THE FESTIVALS -->
     <h2 class="font-display text-3xl md:text-4xl tracking-widest uppercase text-white mt-16 mb-6">Independence & the Festivals</h2>
