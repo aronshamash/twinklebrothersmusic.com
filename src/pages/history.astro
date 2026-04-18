@@ -9,6 +9,7 @@ const roxyPoster = env ? await getImageById(env, '3a8c4737-a339-48e2-b21b-b927a9
 const earlyYearsPhoto = env ? await getImageById(env, '3daadd55-647d-484f-a4ba-79d74b91e91a') : null;
 const legacyPhoto = env ? await getImageById(env, 'f1b4484b-6718-4b1f-8447-e00532099499') : null;
 const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e0cf324') : null;
+const polandStill = env ? await getImageById(env, '158d1ec6-8906-4415-9eea-31f8eae163a0') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -25,9 +26,9 @@ const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e
 
     <!-- PULL QUOTE -->
     <blockquote class="not-prose my-12 relative">
-      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/50 select-none" aria-hidden="true">"</span>
+      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/25 select-none" aria-hidden="true">"</span>
       <p class="relative pl-16 md:pl-20 text-2xl md:text-3xl text-amber-dark font-bold italic leading-snug font-serif">To be independent in music you don't have a company to tell you what to sing. Independently, you're singing from your heart.</p>
-      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark text-sm not-italic font-serif">Norman Grant</cite>
+      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark/50 text-sm not-italic font-serif">Norman Grant</cite>
     </blockquote>
 
     <!-- SECTION: EARLY YEARS -->
@@ -77,9 +78,9 @@ const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e
 
     <!-- PULL QUOTE -->
     <blockquote class="not-prose my-12 relative">
-      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/50 select-none" aria-hidden="true">"</span>
+      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/25 select-none" aria-hidden="true">"</span>
       <p class="relative pl-16 md:pl-20 text-2xl md:text-3xl text-amber-dark font-bold italic leading-snug font-serif">That creativeness bloomed in all of us. We said, okay, we're on our own now. We can do our own thing.</p>
-      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark text-sm not-italic font-serif">Norman Grant</cite>
+      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark/50 text-sm not-italic font-serif">Norman Grant</cite>
     </blockquote>
 
     <!-- SECTION: KINGSTON -->
@@ -115,9 +116,9 @@ const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e
 
     <!-- PULL QUOTE -->
     <blockquote class="not-prose my-12 relative">
-      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/50 select-none" aria-hidden="true">"</span>
+      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/25 select-none" aria-hidden="true">"</span>
       <p class="relative pl-16 md:pl-20 text-2xl md:text-3xl text-amber-dark font-bold italic leading-snug font-serif">These songs are not going to tell you to take a gun and kill that man because he is wicked. We can tell you that you're wicked, with a smile.</p>
-      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark text-sm not-italic font-serif">Ralston Grant</cite>
+      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark/50 text-sm not-italic font-serif">Ralston Grant</cite>
     </blockquote>
 
     <!-- SECTION: AMERICA -->
@@ -170,9 +171,7 @@ const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e
             class="w-full rounded-lg hover:opacity-90 transition-opacity"
           />
         </a>
-        {shakaPhoto.caption && (
-          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{shakaPhoto.caption}</figcaption>
-        )}
+        <figcaption class="text-zinc-500 text-sm mt-3 text-center">Jah Shaka (L) with Norman Grant (R)</figcaption>
       </figure>
     ) : null}
 
@@ -196,26 +195,29 @@ const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e
       </p>
     </div>
 
-    <!-- VIDEO EMBED: Girl Guide film (already public on YouTube) -->
-    <figure class="not-prose my-12">
-      <div class="aspect-video rounded overflow-hidden">
-        <iframe
-          src="https://www.youtube.com/embed/keUOiCcHtoQ?start=2766"
-          title="Girl Guide (1995) - Twinkle Brothers and Trebunie-Tutki"
-          class="w-full h-full"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
-      </div>
-      <figcaption class="text-zinc-500 text-sm mt-3 text-center">"Girl Guide" (1995), Twinkle Brothers and Trebunie-Tutki, Zakopane</figcaption>
-    </figure>
+    {polandStill && (
+      <figure class="not-prose my-12">
+        <a href="https://youtu.be/keUOiCcHtoQ?t=2766" target="_blank" rel="noopener" class="block group">
+          <div class="relative">
+            <img
+              src={`/cdn/${thumbKey(polandStill.r2_key)}`}
+              alt="Still from Girl Guide (1995) — Twinkle Brothers and Trebunie-Tutki, Zakopane, Poland"
+              class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
+            />
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="bg-black/70 text-white text-sm font-sans px-4 py-2 rounded-full">Watch on YouTube</span>
+            </div>
+          </div>
+        </a>
+        <figcaption class="text-zinc-500 text-sm mt-3 text-center">Still from <em>Girl Guide</em> (1995) — Twinkle Brothers and Trebunie-Tutki, Zakopane. <a href="https://youtu.be/keUOiCcHtoQ?t=2766" target="_blank" rel="noopener" class="text-zinc-400 hover:text-white underline underline-offset-2">Watch on YouTube</a></figcaption>
+      </figure>
+    )}
 
     <!-- PULL QUOTE -->
     <blockquote class="not-prose my-12 relative">
-      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/50 select-none" aria-hidden="true">"</span>
+      <span class="absolute -top-2 -left-2 font-serif text-[8rem] md:text-[10rem] leading-none text-amber-dark/25 select-none" aria-hidden="true">"</span>
       <p class="relative pl-16 md:pl-20 text-2xl md:text-3xl text-amber-dark font-bold italic leading-snug font-serif">If I never count millions again, I've counted millions in Poland.</p>
-      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark text-sm not-italic font-serif">Norman Grant</cite>
+      <cite class="block mt-4 pl-16 md:pl-20 text-amber-dark/50 text-sm not-italic font-serif">Norman Grant</cite>
     </blockquote>
 
     <!-- SECTION: THE LIVING LEGACY -->
