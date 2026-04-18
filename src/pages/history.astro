@@ -11,6 +11,7 @@ const legacyPhoto = env ? await getImageById(env, 'f1b4484b-6718-4b1f-8447-e0053
 const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e0cf324') : null;
 const polandStill = env ? await getImageById(env, '158d1ec6-8906-4415-9eea-31f8eae163a0') : null;
 const groeningArticle = env ? await getImageById(env, '8729a7c5-efa8-4ee0-8e98-03568b096233') : null;
+const closingPhoto = env ? await getImageById(env, '07c09655-9ff5-49bc-a261-33f9377dd0db') : null;
 const sunsplashPhoto = env ? await getImageById(env, 'ceb5a659-f09c-4667-80c5-82a9c721bfaf') : null;
 ---
 
@@ -288,6 +289,20 @@ const sunsplashPhoto = env ? await getImageById(env, 'ceb5a659-f09c-4667-80c5-82
       </figure>
     ) : null}
 
+    {closingPhoto && (
+      <figure class="not-prose my-12">
+        <a href={`/image/${closingPhoto.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(closingPhoto.r2_key)}`}
+            alt={closingPhoto.caption || ''}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        {closingPhoto.caption && (
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{closingPhoto.caption}</figcaption>
+        )}
+      </figure>
+    )}
 
   </div>
 </BaseLayout>
