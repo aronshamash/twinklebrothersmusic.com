@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getAllImages, imageDate, formatImageDate, type Image } from '../lib/db';
+import { thumbKey } from '../lib/thumbKey';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const env = (Astro.locals as any).runtime?.env;
@@ -63,10 +64,10 @@ const dotImages = images.map((image) => ({
             <h2 class="font-display text-3xl md:text-4xl tracking-widest text-accent mb-6 border-b border-zinc-800 pb-3">{year}</h2>
             <div class="columns-2 md:columns-3 lg:columns-4 gap-4">
               {grouped[year].map((image) => (
-                <a href={`/image/${image.id}`} class="block mb-4 break-inside-avoid group">
+                <a href={`/image/${image.id}?from=timeline`} class="block mb-4 break-inside-avoid group">
                   <div class="relative">
                     <img
-                      src={`/cdn/${image.r2_key}`}
+                      src={`/cdn/${thumbKey(image.r2_key)}`}
                       alt={image.caption || ''}
                       class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
                       loading="lazy"
@@ -115,7 +116,7 @@ const dotImages = images.map((image) => ({
                 />
                 <div class="dot-popup absolute bottom-8 left-1/2 -translate-x-1/2 w-48 bg-zinc-900 border border-zinc-700 rounded-lg overflow-hidden shadow-xl pointer-events-none opacity-0 transition-opacity z-10">
                   <img
-                    src={`/cdn/${image.r2_key}`}
+                    src={`/cdn/${thumbKey(image.r2_key)}`}
                     alt={image.caption || ''}
                     class="w-full h-32 object-cover"
                     loading="lazy"
@@ -128,7 +129,7 @@ const dotImages = images.map((image) => ({
                     {image.caption && (
                       <p class="text-zinc-400 text-xs mt-0.5 line-clamp-2">{image.caption}</p>
                     )}
-                    <a href={`/image/${image.id}`} class="block mt-2 text-accent text-xs hover:underline">
+                    <a href={`/image/${image.id}?from=timeline`} class="block mt-2 text-accent text-xs hover:underline">
                       View →
                     </a>
                   </div>

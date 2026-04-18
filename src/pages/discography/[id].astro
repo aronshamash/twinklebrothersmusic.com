@@ -33,6 +33,17 @@ const release = await fetchReleaseDetail(
   kv
 );
 
+if (release === 'rate_limited') {
+  return new Response(
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Too many requests</title>
+    <meta http-equiv="refresh" content="5;url=/discography/${releaseId}">
+    <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#111;color:#aaa;}
+    a{color:#fff;}</style></head>
+    <body><p>Discogs rate limit hit — <a href="/discography/${releaseId}">retrying in 5 seconds…</a></p></body></html>`,
+    { status: 429, headers: { 'Content-Type': 'text/html' } }
+  );
+}
+
 if (!release) {
   return Astro.redirect('/discography');
 }

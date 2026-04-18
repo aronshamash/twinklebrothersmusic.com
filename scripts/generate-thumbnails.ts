@@ -16,7 +16,6 @@
 
 import { S3Client, GetObjectCommand, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import sharp from 'sharp';
-import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,6 +34,8 @@ if (existsSync(envPath)) {
 const ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
 const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
 const SECRET_KEY = process.env.R2_SECRET_KEY;
+const CF_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
+const D1_DATABASE_ID = 'b23d6493-bb87-4285-8a0f-35606e4fc635';
 const BUCKET = 'twinkle-images';
 const THUMB_WIDTH = 700;
 const THUMB_QUALITY = 82;
@@ -43,7 +44,11 @@ const DRY_RUN = process.argv.includes('--dry-run');
 
 if (!ACCOUNT_ID || !ACCESS_KEY_ID || !SECRET_KEY) {
   console.error('Missing R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, or R2_SECRET_KEY');
-  console.error('Create an R2 API token with Object Read & Write on the twinkle-images bucket');
+  process.exit(1);
+}
+
+if (!CF_API_TOKEN) {
+  console.error('Missing CLOUDFLARE_API_TOKEN — create a custom token with D1 Edit permission at https://dash.cloudflare.com/profile/api-tokens');
   process.exit(1);
 }
 
@@ -117,17 +122,25 @@ async function runBatch<T>(items: T[], fn: (item: T) => Promise<void>, concurren
   await Promise.all(Array.from({ length: concurrency }, worker));
 }
 
-// Fetch all r2_keys from D1 via wrangler CLI
-function fetchAllR2Keys(): string[] {
-  const output = execSync(
-    'npx wrangler d1 execute twinkle-db --remote --json --command "SELECT r2_key FROM images ORDER BY created_at ASC"',
-    { encoding: 'utf8', cwd: join(__dirname, '..') }
-  );
-  const parsed = JSON.parse(output);
-  return parsed[0].results.map((row: { r2_key: string }) => row.r2_key);
+// Fetch all r2_keys from D1 via Cloudflare REST API
+async function fetchAllR2Keys(): Promise<string[]> {
+  const url = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${D1_DATABASE_ID}/query`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${CF_API_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ sql: 'SELECT r2_key FROM images ORDER BY created_at ASC' }),
+  });
+  const data = await response.json() as { success: boolean; result: { results: { r2_key: string }[] }[]; errors: { message: string }[] };
+  if (!data.success) {
+    throw new Error(`D1 query failed: ${data.errors.map(error => error.message).join(', ')}`);
+  }
+  return data.result[0].results.map(row => row.r2_key);
 }
 
-const r2Keys = fetchAllR2Keys();
+const r2Keys = await fetchAllR2Keys();
 console.log(`Found ${r2Keys.length} images. Generating thumbnails (concurrency=${CONCURRENCY})...`);
 if (DRY_RUN) console.log('DRY RUN - no files will be written\n');
 

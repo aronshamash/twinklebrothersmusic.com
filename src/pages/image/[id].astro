@@ -17,15 +17,22 @@ const { prev, next } = await getAdjacentImages(env, image, fromType);
 
 const displayDate = formatImageDate(image);
 const isPoster = image.type === 'poster';
+const isTimeline = fromType === 'timeline';
+
+const backHref = isTimeline ? '/timeline' : isPoster ? '/posters' : '/photos';
+const backLabel = isTimeline ? 'Timeline' : isPoster ? 'Posters' : 'Photos';
+const activeSection = isTimeline ? '/timeline' : isPoster ? '/posters' : '/photos';
+
+const heading = image.caption || displayDate || 'Archive';
 ---
 
-<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`}>
-  <div class="pt-24 max-w-4xl mx-auto px-6 pb-20">
+<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`} activeSection={activeSection}>
+  <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
     <!-- Nav row -->
     <div class="mb-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <a href={isPoster ? '/posters' : '/photos'} class="text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
-          ← {isPoster ? 'Posters' : 'Photos'}
+        <a href={backHref} class="text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
+          ← {backLabel}
         </a>
         <span class={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${isPoster ? 'bg-accent text-zinc-950' : 'bg-zinc-800 text-zinc-300'}`}>
           {image.type}
@@ -50,6 +57,8 @@ const isPoster = image.type === 'poster';
         )}
       </div>
     </div>
+
+    <h1 class="font-display text-4xl md:text-6xl tracking-widest uppercase text-white mb-6">{heading}</h1>
 
     <img
       src={`/cdn/${image.r2_key}`}

@@ -209,6 +209,25 @@ const displayPhotos = photos;
       history.replaceState({}, '', url.toString());
     });
 
+    // Back button closes lightbox instead of navigating away
+    let historyPushed = false;
+    lightbox.on('beforeOpen', () => {
+      history.pushState({ pswp: true }, '');
+      historyPushed = true;
+    });
+    lightbox.on('destroy', () => {
+      if (historyPushed) {
+        historyPushed = false;
+        history.back();
+      }
+    });
+    window.addEventListener('popstate', () => {
+      if (lightbox.pswp) {
+        historyPushed = false;
+        lightbox.pswp.close();
+      }
+    });
+
     lightbox.init();
 
     els.forEach((el, index) => {

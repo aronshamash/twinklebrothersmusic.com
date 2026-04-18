@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getImagesByType, formatImageDate } from '../lib/db';
+import { thumbKey } from '../lib/thumbKey';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const env = (Astro.locals as any).runtime?.env;
@@ -37,7 +38,7 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
             data-location={poster.location ?? ''}
           >
             <img
-              src={`/cdn/${poster.r2_key}`}
+              src={`/cdn/${thumbKey(poster.r2_key)}`}
               alt={poster.caption || ''}
               class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
               loading="lazy"
@@ -185,11 +186,33 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
       });
     });
 
+    let openingIndex = 0;
+
+    lightbox.on('beforeOpen', () => {
+      const url = els[openingIndex]?.getAttribute('href') ?? '/posters';
+      history.pushState({ pswp: true }, '', url);
+    });
+
+    lightbox.on('change', () => {
+      const idx = lightbox.pswp!.currIndex;
+      const url = els[idx]?.getAttribute('href') ?? '/posters';
+      history.replaceState({ pswp: true }, '', url);
+    });
+
+    lightbox.on('destroy', () => {
+      history.replaceState(null, '', '/posters');
+    });
+
+    window.addEventListener('popstate', () => {
+      if (lightbox.pswp) lightbox.pswp.close();
+    });
+
     lightbox.init();
 
     els.forEach((el, index) => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
+        openingIndex = index;
         lightbox.loadAndOpen(index);
       });
     });

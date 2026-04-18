@@ -27,6 +27,7 @@ import { randomUUID } from 'node:crypto';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import Anthropic from '@anthropic-ai/sdk';
 import exifr from 'exifr';
+import { detectImageFormat } from '../src/lib/imageFormat';
 
 // --- Load .env ---
 function loadEnv() {
@@ -124,12 +125,13 @@ if (type === 'poster' && !args['no-analyze'] && process.env.ANTHROPIC_API_KEY) {
   try {
     const imageBytes = readFileSync(filePath);
     const base64 = imageBytes.toString('base64');
-    const ext = extname(filePath).toLowerCase();
-    const mediaTypeMap: Record<string, string> = {
-      '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
-      '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif',
-    };
-    const mediaType = mediaTypeMap[ext] ?? 'image/jpeg';
+    const format = detectImageFormat(imageBytes);
+    if (!format) {
+      throw new Error('Unsupported or invalid image file. Use JPEG, PNG, WebP, or GIF.');
+    }
+    if (!format.supportedByClaude) {
+      throw new Error(`${format.label} images are not supported for Claude analysis. Convert to JPEG, PNG, WebP, or GIF first.`);
+    }
 
     const client = new Anthropic();
     const response = await client.messages.create({
@@ -140,7 +142,7 @@ if (type === 'poster' && !args['no-analyze'] && process.env.ANTHROPIC_API_KEY) {
         content: [
           {
             type: 'image',
-            source: { type: 'base64', media_type: mediaType as 'image/jpeg', data: base64 },
+            source: { type: 'base64', media_type: format.mediaType as 'image/jpeg', data: base64 },
           },
           {
             type: 'text',

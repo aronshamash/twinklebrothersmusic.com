@@ -1,5 +1,6 @@
 import type { APIContext } from 'astro';
 import { verifyAdminCookie } from '../../../lib/adminAuth';
+import { detectImageFormat } from '../../../lib/imageFormat';
 
 interface PosterAnalysis {
   event_date: string | null;
@@ -7,14 +8,6 @@ interface PosterAnalysis {
   caption: string | null;
   credit: string | null;
 }
-
-const MEDIA_TYPES: Record<string, string> = {
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.png': 'image/png',
-  '.webp': 'image/webp',
-  '.gif': 'image/gif',
-};
 
 export async function POST(context: APIContext): Promise<Response> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,14 +27,20 @@ export async function POST(context: APIContext): Promise<Response> {
   const file = formData.get('file') as File | null;
   if (!file) return new Response('Missing file', { status: 400 });
 
-  const extMatch = file.name.match(/\.[^.]+$/);
-  const ext = (extMatch ? extMatch[0] : '.jpg').toLowerCase();
-  const mediaType = MEDIA_TYPES[ext] ?? 'image/jpeg';
-
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
+  const format = detectImageFormat(bytes);
+  if (!format) {
+    return new Response('Unsupported or invalid image file. Use JPEG, PNG, WebP, or GIF.', { status: 400 });
+  }
+  if (!format.supportedByClaude) {
+    return new Response(`${format.label} images are not supported for AI analysis. Convert to JPEG, PNG, WebP, or GIF first.`, { status: 400 });
+  }
+
   let binary = '';
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  for (let offset = 0; offset < bytes.length; offset += 8192) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+  }
   const base64 = btoa(binary);
 
   const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
@@ -52,14 +51,14 @@ export async function POST(context: APIContext): Promise<Response> {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-haiku-4-5',
       max_tokens: 256,
       messages: [{
         role: 'user',
         content: [
           {
             type: 'image',
-            source: { type: 'base64', media_type: mediaType, data: base64 },
+            source: { type: 'base64', media_type: format.mediaType, data: base64 },
           },
           {
             type: 'text',
@@ -78,8 +77,9 @@ If a year is not visible but a day+month is, use the most plausible year based o
   });
 
   if (!anthropicResponse.ok) {
-    console.error('Anthropic API error:', anthropicResponse.status);
-    return new Response('Analysis failed', { status: 502 });
+    const errorText = await anthropicResponse.text();
+    console.error('Anthropic API error:', anthropicResponse.status, errorText);
+    return new Response(`Analysis failed: ${errorText || anthropicResponse.status}`, { status: 502 });
   }
 
   const data = await anthropicResponse.json() as { content: Array<{ type: string; text: string }> };

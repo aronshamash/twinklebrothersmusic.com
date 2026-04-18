@@ -8,6 +8,7 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogType?: string;
+  activeSection?: string;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   description = 'Twinkle Brothers — The definitive digital archive of reggae legends.',
   ogImage = '/og.png',
   ogType = 'website',
+  activeSection,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
@@ -55,7 +57,7 @@ const ogImageURL = new URL(ogImage, Astro.site).href;
     <slot name="head" />
   </head>
   <body class="min-h-screen flex flex-col">
-    <Header />
+    <Header activeSection={activeSection} />
     <main class="flex-1">
       <slot />
     </main>

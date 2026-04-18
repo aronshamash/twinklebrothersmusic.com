@@ -199,7 +199,7 @@ export async function fetchDiscography(skipCache = false): Promise<DiscogsReleas
 
 type KVStore = { get(key: string): Promise<string | null>; put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void> };
 
-export async function fetchReleaseDetail(id: number, masterId?: number, releaseType: 'master' | 'release' = 'release', coversOnly = false, kv?: KVStore): Promise<DiscogsReleaseDetail | null> {
+export async function fetchReleaseDetail(id: number, masterId?: number, releaseType: 'master' | 'release' = 'release', coversOnly = false, kv?: KVStore): Promise<DiscogsReleaseDetail | null | 'rate_limited'> {
   const token = import.meta.env.DISCOGS_TOKEN;
   if (!token) return null;
 
@@ -226,11 +226,12 @@ export async function fetchReleaseDetail(id: number, masterId?: number, releaseT
     const endpoint = releaseType === 'master'
       ? `https://api.discogs.com/masters/${id}`
       : `https://api.discogs.com/releases/${id}`;
+
     const response = await fetch(endpoint, { headers: DISCOGS_HEADERS() });
 
     if (!response.ok) {
       console.error(`Discogs release fetch error (${id}): ${response.status}`);
-      return null;
+      return response.status === 429 ? 'rate_limited' : null;
     }
 
     const raw = await response.json();
@@ -307,7 +308,7 @@ export async function fetchReleaseDetail(id: number, masterId?: number, releaseT
     if (!coversOnly) {
       detailCache.set(id, { data: detail, time: Date.now() });
       if (kv) {
-        kv.put(kvKey, JSON.stringify(detail), { expirationTtl: 7 * 24 * 60 * 60 }).catch(() => {});
+        kv.put(kvKey, JSON.stringify(detail)).catch(() => {});
       }
     }
     return detail;
