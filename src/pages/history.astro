@@ -10,6 +10,8 @@ const earlyYearsPhoto = env ? await getImageById(env, '3daadd55-647d-484f-a4ba-7
 const legacyPhoto = env ? await getImageById(env, 'f1b4484b-6718-4b1f-8447-e00532099499') : null;
 const shakaPhoto = env ? await getImageById(env, '89ccc6d1-1efc-43ba-8fc2-c2110e0cf324') : null;
 const polandStill = env ? await getImageById(env, '158d1ec6-8906-4415-9eea-31f8eae163a0') : null;
+const groeningArticle = env ? await getImageById(env, '8729a7c5-efa8-4ee0-8e98-03568b096233') : null;
+const sunsplashPhoto = env ? await getImageById(env, 'ceb5a659-f09c-4667-80c5-82a9c721bfaf') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -140,13 +142,50 @@ const polandStill = env ? await getImageById(env, '158d1ec6-8906-4415-9eea-31f8e
         In 1982, reggae was breaking in the United States in the wake of Bob Marley's death the previous year. The Twinkle Brothers arrived in Los Angeles for their first American dates. At the Roxy on Sunset Strip, before anything was set up, reggae archivist Roger Steffens ran onto the stage. He had been collecting and broadcasting Jamaican music for years and knew exactly who had just walked in. John Belushi was in the crowd that night.
       </p>
       <p>
-        The audience that turned up surprised them. People had been following from a distance — UCLA students, West Coast reggae faithful. "When Twinkle Brothers came back," Norman has recalled, "they said: I never knew you were so great." From New York, they were booked for Reggae Sunsplash in Jamaica.
+        The audience that turned up surprised them. People had been following from a distance — UCLA students, West Coast reggae faithful. "When Twinkle Brothers came back," Norman has recalled, "they said: I never knew you were so great." They were booked for further dates: the Country Club, the Olympic Auditorium, venues where the bass response of the PA had become part of the legend of the night.
+      </p>
+      <p>
+        Among those watching and writing about it was a young cartoonist working as an arts and music critic for the LA Reader. Matt Groening — who would later create The Simpsons — was a regular attendee at Twinkle Brothers shows during this period and covered them in print more than once. His reviews captured the energy of what was happening: roots reggae landing in Los Angeles with a force that surprised people who thought they already understood it. "Fans who had only heard the records," he wrote, "were surprised by the group's intensity and wit." That dispatch was filed from a show the year after the Roxy debut — by which point, the Twinkle Brothers had already become a fixture.
+      </p>
+      <div class="clear-both"></div>
+    </div>
+
+    {groeningArticle && (
+      <figure class="not-prose my-12">
+        <a href={`/image/${groeningArticle.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(groeningArticle.r2_key)}`}
+            alt="Matt Groening review of Twinkle Brothers, LA Reader"
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        <figcaption class="text-zinc-500 text-sm mt-3 text-center">Matt Groening, LA Reader — Critic's Choice</figcaption>
+      </figure>
+    )}
+
+    <div class="prose prose-invert prose-lg max-w-none">
+      <p>
+        From New York, they were booked for Reggae Sunsplash in Jamaica.
       </p>
       <p>
         In August 1982, the Twinkle Brothers performed at Reggae Sunsplash at Jarrett Park, Montego Bay — one of the great stages of world reggae at the height of its power. They returned as international artists. It was the last time they performed in Jamaica. The footage exists.
       </p>
-      <div class="clear-both"></div>
     </div>
+
+    {sunsplashPhoto && (
+      <figure class="not-prose my-12">
+        <a href={`/image/${sunsplashPhoto.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(sunsplashPhoto.r2_key)}`}
+            alt={sunsplashPhoto.caption || 'Reggae Sunsplash, Jarrett Park, Montego Bay, 1982'}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+        {sunsplashPhoto.caption && (
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">{sunsplashPhoto.caption}</figcaption>
+        )}
+      </figure>
+    )}
 
     <!-- SECTION: ENGLAND -->
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">England</h2>
