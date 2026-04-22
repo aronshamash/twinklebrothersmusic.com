@@ -27,3 +27,4 @@ Thumbs.db
 .DS_Store
 
 # Lock files are fine to commit (pnpm-lock.yaml)
+.playwright-mcp/
