@@ -13,6 +13,7 @@ const polandStill = env ? await getImageById(env, '158d1ec6-8906-4415-9eea-31f8e
 const groeningArticle = env ? await getImageById(env, '8729a7c5-efa8-4ee0-8e98-03568b096233') : null;
 const closingPhoto = env ? await getImageById(env, '07c09655-9ff5-49bc-a261-33f9377dd0db') : null;
 const sunsplashPhoto = env ? await getImageById(env, 'ceb5a659-f09c-4667-80c5-82a9c721bfaf') : null;
+const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48ad4140ade9') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -68,8 +69,22 @@ const sunsplashPhoto = env ? await getImageById(env, 'ceb5a659-f09c-4667-80c5-82
     <!-- SECTION: THE FESTIVALS -->
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">Independence & the Festivals</h2>
     <div class="prose prose-invert prose-lg max-w-none">
+      {festivalPhoto && (
+        <figure class="not-prose float-right ml-8 mb-4 w-1/3">
+          <a href={`/image/${festivalPhoto.id}?from=history`}>
+            <img
+              src={`/cdn/${thumbKey(festivalPhoto.r2_key)}`}
+              alt={festivalPhoto.caption || ''}
+              class="w-full rounded-lg hover:opacity-90 transition-opacity"
+            />
+          </a>
+          {festivalPhoto.caption && (
+            <figcaption class="text-zinc-500 text-xs mt-2 text-center">{festivalPhoto.caption}</figcaption>
+          )}
+        </figure>
+      )}
       <p>
-        In 1962, Jamaica cut its ties with the British Crown and became an independent nation. Norman Grant was twelve years old, Ralston fourteen. "When we heard we were getting Independence, we're going to be our own nation, that creativeness bloomed in all of us," Norman recalled. "We said, okay, we're on our own now. We can do our own thing."
+        In 1962 as Jamaica cut its ties with the British Crown and became an independent nation, Norman Grant was twelve years old, Ralston fourteen. "When we heard we were getting Independence, we're going to be our own nation, that creativeness bloomed in all of us," Norman recalled. "We said, okay, we're on our own now. We can do our own thing."
       </p>
       <p>
         That same year, the Jamaican government launched the Pop and Mento Festival, a national music competition running from parish level through regional heats to a national final in Kingston. For two brothers from Falmouth with no studio connections and no money, it was a proper door. They entered at parish level and won. The following year they advanced to the regional final in Montego Bay, and they felt they were robbed. By their own account the decision went against them two years running while the crowd booed the judges. On the third attempt, in 1964, they won the regional heat, and went on to Kingston. They won that too, taking first place in the group category while Norman simultaneously won the solo category outright. Both in the same year.
