@@ -55,7 +55,7 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">Independence & the Festivals</h2>
     <div class="prose prose-invert prose-lg max-w-none">
       {festivalPhoto && (
-        <figure class="not-prose float-right ml-8 mb-4 w-[40%]">
+        <figure class="not-prose float-right ml-8 mb-4 w-[40%] mt-3">
           <a href={`/image/${festivalPhoto.id}?from=history`}>
             <img
               src={`/cdn/${thumbKey(festivalPhoto.r2_key)}`}
