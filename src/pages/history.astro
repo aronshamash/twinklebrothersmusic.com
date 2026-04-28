@@ -50,21 +50,6 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
       <p>
         The Twinkle Brothers name came from a Rastaman one evening in the district of Uggingstown, while the brothers were rehearsing. He looked at them and said: "Call yourselves the Twinkle Brothers." It stuck.
       </p>
-    </div>
-
-    <!-- IMAGE PLACEHOLDER: Early Falmouth / Jamaica compound life -->
-    <!-- Suggested: archival photo of Falmouth, or early portrait of the brothers -->
-    {earlyYearsPhoto ? (
-      <figure class="not-prose my-12">
-        <a href={`/image/${earlyYearsPhoto.id}?from=photo`}>
-          <img
-            src={`/cdn/${thumbKey(earlyYearsPhoto.r2_key)}`}
-            alt={earlyYearsPhoto.caption || ''}
-            class="w-full rounded-lg hover:opacity-90 transition-opacity"
-          />
-        </a>
-      </figure>
-    ) : null}
 
     <!-- SECTION: THE FESTIVALS -->
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">Independence & the Festivals</h2>
@@ -120,6 +105,22 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
         By 1974 they were booking sessions under their own steam, working with Sly Dunbar, Lloyd Parks and Ancell Collins. That year they became the first act ever to rent Treasure Isle studio from Duke Reid (the first time Reid had ever let the room to another act), recording <a href="/discography/2025281" class="text-accent hover:text-accent-light">"Jahovia"</a> and "I Love You So" with Family Man and Carlton Barrett.
       </p>
     </div>
+
+        </div>
+
+    <!-- IMAGE PLACEHOLDER: Early Falmouth / Jamaica compound life -->
+    <!-- Suggested: archival photo of Falmouth, or early portrait of the brothers -->
+    {earlyYearsPhoto ? (
+      <figure class="not-prose my-12">
+        <a href={`/image/${earlyYearsPhoto.id}?from=photo`}>
+          <img
+            src={`/cdn/${thumbKey(earlyYearsPhoto.r2_key)}`}
+            alt={earlyYearsPhoto.caption || ''}
+            class="w-full rounded-lg hover:opacity-90 transition-opacity"
+          />
+        </a>
+      </figure>
+    ) : null}
 
     <!-- SECTION: RASTA & ROOTS -->
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">Rasta & Roots</h2>
