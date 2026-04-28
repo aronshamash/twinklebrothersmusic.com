@@ -96,9 +96,8 @@ const displayPhotos = photos;
       const img = el.querySelector('img')!;
       const updateSize = () => {
         if (img.naturalWidth > 0) {
-          const scale = Math.max(1, 1600 / img.naturalWidth);
-          items[index].width = Math.round(img.naturalWidth * scale);
-          items[index].height = Math.round(img.naturalHeight * scale);
+          items[index].width = img.naturalWidth;
+          items[index].height = img.naturalHeight;
         }
       };
       if (img.complete) updateSize();
