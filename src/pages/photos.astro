@@ -109,6 +109,7 @@ const displayPhotos = photos;
       pswpModule: () => import('photoswipe'),
       bgOpacity: 1,
       padding: { top: 40, bottom: 100, left: 8, right: 8 },
+      initialZoomLevel: (zoomLevelObject) => Math.min(1, zoomLevelObject.fit),
     });
 
     lightbox.on('uiRegister', function () {
