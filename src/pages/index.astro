@@ -16,19 +16,30 @@ const featuredPhotoIds = [
   'c887cea4-4657-4abf-8769-3d53d7915a68',
 ];
 
-const [heroPhoto, tourPhoto, storyPhoto, allEvents, ...featuredPhotosRaw] = await Promise.all([
+const featuredPosterIds = [
+  '3a8c4737-a339-48e2-b21b-b927a957b7f5',
+  '1ee3a28b-2719-4fa4-801e-7d06e678beee',
+  '2ea0c9a7-876e-41c0-8cd6-5a74d375339d',
+  '23fb2309-0d0c-401e-a6ff-02928b900f5b',
+  'f8b10f4d-7d8b-4186-83f2-89389f93e750',
+  'e540ae4e-985a-43ff-b9d0-ddc590e17e6f',
+];
+
+const [heroPhoto, tourPhoto, storyPhoto, allEvents, ...allFeaturedRaw] = await Promise.all([
   env ? getImageById(env, '2a91e2da-45e4-4d9b-af64-24b7dc182488') : null,
   env ? getImageById(env, '0559bf3e-2158-47d5-9126-948aee9ee894') : null,
   env ? getImageById(env, '0015c01f-b832-482e-865f-2426f3cc7a5d') : null,
   fetchTourDates(),
   ...featuredPhotoIds.map(id => env ? getImageById(env, id) : null),
+  ...featuredPosterIds.map(id => env ? getImageById(env, id) : null),
 ]);
 
 const upcomingShows = allEvents
   .filter((e: { confirmed: string }) => e.confirmed.toUpperCase() === 'Y')
   .slice(0, 3);
 
-const featuredPhotos = featuredPhotosRaw.filter(Boolean);
+const featuredPhotos = allFeaturedRaw.slice(0, featuredPhotoIds.length).filter(Boolean);
+const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boolean);
 ---
 
 <BaseLayout title="Twinkle Brothers — Reggae Legends Since 1962">
@@ -44,7 +55,8 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
             class="absolute inset-0 w-full h-full object-cover object-[center_20%]"
           />
           <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.55) 10%, rgba(9,9,11,0.0) 25%, rgba(9,9,11,0.0) 42%, rgba(9,9,11,0.75) 60%, rgba(9,9,11,0.97) 80%, #09090b 100%)"></div>
-          <div class="absolute left-0 right-0 px-8 text-center" style="top: 52%;">
+          <div class="absolute inset-0" style="background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.0) 12%, rgba(9,9,11,0.0) 88%, #09090b 100%)"></div>
+          <div class="absolute left-0 right-0 px-8 text-center" style="top: calc(52% - 50px);">
             <p class="text-xs tracking-[0.3em] uppercase font-semibold text-accent mb-3 opacity-90">Est. 1962 · Falmouth, Jamaica</p>
             <h1 class="font-display text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase text-white leading-none mb-4">
               Twinkle<br>Brothers
@@ -67,7 +79,7 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
   </section>
 
   <!-- Live Shows -->
-  <section class="max-w-4xl mx-auto px-6 pt-10 pb-16">
+  <section class="max-w-4xl mx-auto px-6 pt-2 pb-16">
     <div class="grid grid-cols-1 md:grid-cols-[45%_55%] gap-10 items-start">
       <div>
         <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Live Shows</h2>
@@ -146,7 +158,7 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
   )}
 
   <!-- Listen -->
-  <section class="max-w-4xl mx-auto px-6 pt-4 pb-24">
+  <section class="max-w-4xl mx-auto px-6 pt-4 pb-16">
     <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Listen</h2>
     <iframe
       src="https://open.spotify.com/embed/artist/129UGN7LRFtvMzCf0h2Y8s?utm_source=generator&theme=0"
@@ -160,5 +172,27 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
       Full catalogue →
     </a>
   </section>
+
+  <!-- Posters -->
+  {featuredPosters.length > 0 && (
+    <section class="max-w-4xl mx-auto px-6 pt-4 pb-24">
+      <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Posters</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {featuredPosters.map((poster) => poster && (
+          <a href={`/image/${poster.id}?from=poster`} class="block overflow-hidden rounded-lg group">
+            <img
+              src={`/cdn/${thumbKey(poster.r2_key)}`}
+              alt={poster.caption || ''}
+              class="w-full aspect-[3/4] object-cover group-hover:opacity-80 transition-opacity"
+              loading="lazy"
+            />
+          </a>
+        ))}
+      </div>
+      <a href="/posters" class="inline-block mt-6 text-accent hover:text-accent-light transition-colors font-medium">
+        View all posters →
+      </a>
+    </section>
+  )}
 
 </BaseLayout>
