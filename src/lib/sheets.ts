@@ -21,6 +21,7 @@ export interface TourEvent {
   location: string;
   contact: string;
   confirmed: string;
+  paidShow: string;
   ticketUrl: string;
 }
 
@@ -96,7 +97,7 @@ export async function fetchTourDates(skipCache = false): Promise<TourEvent[]> {
     const serviceAccount = JSON.parse(credentials);
     const accessToken = await getGoogleAccessToken(serviceAccount.client_email, serviceAccount.private_key);
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:F`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:G`;
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -126,7 +127,8 @@ export async function fetchTourDates(skipCache = false): Promise<TourEvent[]> {
         location: String(row[2] || '').trim(),
         contact: String(row[3] || '').trim(),
         confirmed: String(row[4] || '').trim(),
-        ticketUrl: String(row[5] || '').trim(),
+        paidShow: String(row[5] || '').trim(),
+        ticketUrl: String(row[6] || '').trim(),
       });
     }
 

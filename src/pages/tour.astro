@@ -36,7 +36,7 @@ const events = allEvents.filter((event) => event.confirmed.toUpperCase() === 'Y'
                     {event.location && <span class="text-zinc-300 text-sm">— {event.location}</span>}
                   </div>
                 </div>
-                {event.ticketUrl && (
+                {event.paidShow.toUpperCase() === 'Y' && event.ticketUrl && (
                   <a
                     href={event.ticketUrl}
                     target="_blank"
@@ -45,6 +45,22 @@ const events = allEvents.filter((event) => event.confirmed.toUpperCase() === 'Y'
                   >
                     Tickets
                   </a>
+                )}
+                {event.paidShow.toUpperCase() === 'N' && (
+                  event.ticketUrl ? (
+                    <a
+                      href={event.ticketUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="shrink-0 border border-white/40 text-white/70 text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded hover:border-white hover:text-white transition-colors self-start md:self-auto"
+                    >
+                      Free
+                    </a>
+                  ) : (
+                    <span class="shrink-0 border border-white/40 text-white/70 text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded self-start md:self-auto">
+                      Free
+                    </span>
+                  )
                 )}
               </div>
             </div>
