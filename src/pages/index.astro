@@ -65,61 +65,55 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
   </section>
 
   <!-- Live Shows -->
-  {upcomingShows.length > 0 && (
-    <section class="max-w-4xl mx-auto px-6 pt-20 pb-16">
-      <div class="flex flex-col md:flex-row gap-10 items-start">
-        <div class="flex-1">
-          <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Live Shows</h2>
-          <div class="space-y-5">
-            {upcomingShows.map((event) => (
-              <div class="border-b border-white/10 pb-5">
-                <div class="text-accent text-sm font-medium mb-1">{event.date}</div>
-                <div class="text-white text-xl font-semibold leading-tight">{event.eventName}</div>
-                {event.location && <div class="text-zinc-400 text-sm mt-1">{event.location}</div>}
-              </div>
-            ))}
+  <section class="max-w-4xl mx-auto px-6 pt-20 pb-16 overflow-hidden">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Live Shows</h2>
+    {tourPhoto && (
+      <figure class="float-right ml-8 mb-4 w-2/5">
+        <img
+          src={`/cdn/${thumbKey(tourPhoto.r2_key)}`}
+          alt={tourPhoto.caption || ''}
+          class="w-full rounded-lg"
+          loading="lazy"
+        />
+      </figure>
+    )}
+    {upcomingShows.length > 0 ? (
+      <div class="space-y-5">
+        {upcomingShows.map((event) => (
+          <div class="border-b border-white/10 pb-5">
+            <div class="text-accent text-sm font-medium mb-1">{event.date}</div>
+            <div class="text-white text-xl font-semibold leading-tight">{event.eventName}</div>
+            {event.location && <div class="text-zinc-400 text-sm mt-1">{event.location}</div>}
           </div>
-          <a href="/tour" class="inline-block mt-8 text-accent hover:text-accent-light transition-colors font-medium">
-            See all dates →
-          </a>
-        </div>
-        {tourPhoto && (
-          <div class="w-full md:w-2/5 flex-shrink-0">
-            <img
-              src={`/cdn/${thumbKey(tourPhoto.r2_key)}`}
-              alt={tourPhoto.caption || ''}
-              class="w-full rounded-lg"
-              loading="lazy"
-            />
-          </div>
-        )}
+        ))}
       </div>
-    </section>
-  )}
+    ) : (
+      <p class="text-zinc-400">No upcoming dates confirmed yet. Check back soon.</p>
+    )}
+    <a href="/tour" class="inline-block mt-8 text-accent hover:text-accent-light transition-colors font-medium">
+      See all dates →
+    </a>
+  </section>
 
   <!-- Our Story -->
-  <section class="max-w-4xl mx-auto px-6 pt-4 pb-16">
-    <div class="flex flex-col md:flex-row gap-10 items-start">
-      {storyPhoto && (
-        <div class="w-full md:w-2/5 flex-shrink-0 order-2 md:order-1">
-          <img
-            src={`/cdn/${thumbKey(storyPhoto.r2_key)}`}
-            alt={storyPhoto.caption || ''}
-            class="w-full rounded-lg"
-            loading="lazy"
-          />
-        </div>
-      )}
-      <div class="flex-1 order-1 md:order-2">
-        <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">The Story</h2>
-        <p class="text-zinc-300 text-lg leading-relaxed mb-6">
-          Norman and Ralston Grant started making music in Falmouth, Jamaica in 1962, singing in Sunday school choirs and beating rhythms on sardine tins. From the Kingston studio circuit and Jamaica's national music festivals, they built their way to a Virgin Records deal in the late 1970s and have been touring the world ever since. Norman moved to the UK in 1986 and has run the band and the Twinkle label from there. Over sixty albums. Their Rastafarian conviction never shifted.
-        </p>
-        <a href="/history" class="text-accent hover:text-accent-light transition-colors font-medium">
-          Read the full history →
-        </a>
-      </div>
-    </div>
+  <section class="max-w-4xl mx-auto px-6 pt-4 pb-16 overflow-hidden">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">The Story</h2>
+    {storyPhoto && (
+      <figure class="float-right ml-8 mb-4 w-2/5">
+        <img
+          src={`/cdn/${thumbKey(storyPhoto.r2_key)}`}
+          alt={storyPhoto.caption || ''}
+          class="w-full rounded-lg"
+          loading="lazy"
+        />
+      </figure>
+    )}
+    <p class="text-zinc-300 text-lg leading-relaxed mb-6">
+      Norman and Ralston Grant started making music in Falmouth, Jamaica in 1962, singing in Sunday school choirs and beating rhythms on sardine tins. From the Kingston studio circuit and Jamaica's national music festivals, they built their way to a Virgin Records deal in the late 1970s and have been touring the world ever since. Norman moved to the UK in 1986 and has run the band and the Twinkle label from there. Over sixty albums. Their Rastafarian conviction never shifted.
+    </p>
+    <a href="/history" class="text-accent hover:text-accent-light transition-colors font-medium">
+      Read the full history →
+    </a>
   </section>
 
   <!-- Photos -->
@@ -127,7 +121,7 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
     <section class="max-w-4xl mx-auto px-6 pt-4 pb-24">
       <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Photos</h2>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {featuredPhotos.map((photo) => (
+        {featuredPhotos.map((photo) => photo && (
           <a href={`/image/${photo.id}?from=photo`} class="block overflow-hidden rounded-lg group">
             <img
               src={`/cdn/${thumbKey(photo.r2_key)}`}
