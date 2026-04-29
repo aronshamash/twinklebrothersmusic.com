@@ -34,26 +34,26 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
 <BaseLayout title="Twinkle Brothers — Reggae Legends Since 1962">
 
   <!-- Hero -->
-  <section class="min-h-screen flex flex-col justify-center pt-20 pb-10">
+  <section class="flex flex-col pt-16 pb-0">
     <div class="max-w-6xl mx-auto px-6 w-full">
       {heroPhoto && (
-        <div class="relative overflow-hidden rounded-2xl mb-8" style="max-height: 80vh;">
+        <div class="relative overflow-hidden" style="max-height: 88vh;">
           <img
             src={`/cdn/${heroPhoto.r2_key}`}
             alt=""
             class="w-full object-cover object-[center_20%]"
-            style="max-height: 80vh;"
+            style="max-height: 88vh;"
           />
-          <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(9,9,11,0.5) 0%, rgba(9,9,11,0.0) 6%, rgba(9,9,11,0.0) 50%, rgba(9,9,11,0.7) 72%, rgba(9,9,11,0.97) 95%, #09090b 100%)"></div>
-          <div class="absolute bottom-0 left-0 right-0 p-8">
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.6) 12%, rgba(9,9,11,0.0) 28%, rgba(9,9,11,0.0) 38%, rgba(9,9,11,0.75) 58%, rgba(9,9,11,0.97) 82%, #09090b 100%)"></div>
+          <div class="absolute bottom-0 left-0 right-0 px-8 pb-10 text-center">
             <p class="text-xs tracking-[0.3em] uppercase font-semibold text-accent mb-3 opacity-90">Est. 1962 · Falmouth, Jamaica</p>
             <h1 class="font-display text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase text-white leading-none mb-4">
               Twinkle<br>Brothers
             </h1>
-            <p class="text-zinc-300 text-base md:text-lg mb-6 max-w-xl">
+            <p class="text-zinc-300 text-base md:text-lg mb-6 max-w-xl mx-auto">
               Reggae legends from Falmouth, Jamaica. Six decades of conscious music, spiritual conviction, and international touring.
             </p>
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-4 justify-center">
               <a href="/history" class="bg-accent text-zinc-950 font-semibold px-8 py-3 rounded hover:bg-accent-light transition-colors">
                 Our Story
               </a>
