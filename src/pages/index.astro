@@ -1,25 +1,34 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getImageById, getImagesByType } from '../lib/db';
+import { getImageById } from '../lib/db';
 import { fetchTourDates } from '../lib/sheets';
 import { thumbKey } from '../lib/thumbKey';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const env = (Astro.locals as any).runtime?.env;
 
-const [heroPhoto, tourPhoto, storyPhoto, allPhotos, allEvents] = await Promise.all([
+const featuredPhotoIds = [
+  'e7f2f66d-27cf-403e-9f74-d9e59df7654e',
+  '07c09655-9ff5-49bc-a261-33f9377dd0db',
+  'c46f6b46-8f85-4af3-894c-e4496ddac551',
+  'cf34c387-8c3f-49dc-9011-3245087c4ef2',
+  '7b1d6f46-d607-42d1-8e55-fbedff4e8c2b',
+  'c887cea4-4657-4abf-8769-3d53d7915a68',
+];
+
+const [heroPhoto, tourPhoto, storyPhoto, allEvents, ...featuredPhotosRaw] = await Promise.all([
   env ? getImageById(env, '2a91e2da-45e4-4d9b-af64-24b7dc182488') : null,
   env ? getImageById(env, '0559bf3e-2158-47d5-9126-948aee9ee894') : null,
   env ? getImageById(env, '0015c01f-b832-482e-865f-2426f3cc7a5d') : null,
-  env ? getImagesByType(env, 'photo') : [],
   fetchTourDates(),
+  ...featuredPhotoIds.map(id => env ? getImageById(env, id) : null),
 ]);
 
 const upcomingShows = allEvents
-  .filter(e => e.confirmed.toUpperCase() === 'Y')
+  .filter((e: { confirmed: string }) => e.confirmed.toUpperCase() === 'Y')
   .slice(0, 3);
 
-const featuredPhotos = allPhotos.slice(0, 6);
+const featuredPhotos = featuredPhotosRaw.filter(Boolean);
 ---
 
 <BaseLayout title="Twinkle Brothers — Reggae Legends Since 1962">
