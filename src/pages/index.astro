@@ -138,7 +138,10 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
   <!-- Photos -->
   {featuredPhotos.length > 0 && (
     <section class="max-w-4xl mx-auto px-6 pt-4 pb-16">
-      <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Photography</h2>
+      <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-6">Photography</h2>
+      <p class="text-zinc-400 text-lg leading-relaxed mb-8">
+        We have collected some of the best photography we can find, thanks to all the photographers who documented the band over the years. If you have any, especially from the early days, please <a href="/contact" class="text-accent hover:text-accent-light transition-colors">get in touch</a>.
+      </p>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {featuredPhotos.map((photo) => photo && (
           <a href={`/image/${photo.id}?from=photo`} class="block overflow-hidden rounded-lg group">
