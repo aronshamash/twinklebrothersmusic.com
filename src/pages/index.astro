@@ -34,18 +34,17 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
 <BaseLayout title="Twinkle Brothers — Reggae Legends Since 1962">
 
   <!-- Hero -->
-  <section class="flex flex-col pt-16 pb-0">
+  <section class="flex flex-col pt-0 pb-0">
     <div class="max-w-6xl mx-auto px-6 w-full">
       {heroPhoto && (
-        <div class="relative overflow-hidden" style="max-height: 88vh;">
+        <div class="relative overflow-hidden" style="min-height: 90vh;">
           <img
             src={`/cdn/${heroPhoto.r2_key}`}
             alt=""
-            class="w-full object-cover object-[center_20%]"
-            style="max-height: 88vh;"
+            class="absolute inset-0 w-full h-full object-cover object-[center_20%]"
           />
-          <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.6) 12%, rgba(9,9,11,0.0) 28%, rgba(9,9,11,0.0) 38%, rgba(9,9,11,0.75) 58%, rgba(9,9,11,0.97) 82%, #09090b 100%)"></div>
-          <div class="absolute bottom-0 left-0 right-0 px-8 pb-10 text-center">
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.55) 10%, rgba(9,9,11,0.0) 25%, rgba(9,9,11,0.0) 42%, rgba(9,9,11,0.75) 60%, rgba(9,9,11,0.97) 80%, #09090b 100%)"></div>
+          <div class="absolute left-0 right-0 px-8 text-center" style="top: 52%;">
             <p class="text-xs tracking-[0.3em] uppercase font-semibold text-accent mb-3 opacity-90">Est. 1962 · Falmouth, Jamaica</p>
             <h1 class="font-display text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase text-white leading-none mb-4">
               Twinkle<br>Brothers
@@ -124,26 +123,9 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
     </a>
   </section>
 
-  <!-- Listen -->
-  <section class="max-w-4xl mx-auto px-6 pt-4 pb-16">
-    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Listen</h2>
-    <iframe
-      src="https://open.spotify.com/embed/artist/129UGN7LRFtvMzCf0h2Y8s?utm_source=generator&theme=0"
-      width="100%"
-      height="200"
-      frameborder="0"
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-      style="border-radius: 12px;"
-    ></iframe>
-    <a href="/listen" class="inline-block mt-6 text-accent hover:text-accent-light transition-colors font-medium">
-      Full catalogue →
-    </a>
-  </section>
-
   <!-- Photos -->
   {featuredPhotos.length > 0 && (
-    <section class="max-w-4xl mx-auto px-6 pt-4 pb-24">
+    <section class="max-w-4xl mx-auto px-6 pt-4 pb-16">
       <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Photography</h2>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {featuredPhotos.map((photo) => photo && (
@@ -162,5 +144,21 @@ const featuredPhotos = featuredPhotosRaw.filter(Boolean);
       </a>
     </section>
   )}
+
+  <!-- Listen -->
+  <section class="max-w-4xl mx-auto px-6 pt-4 pb-24">
+    <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Listen</h2>
+    <iframe
+      src="https://open.spotify.com/embed/artist/129UGN7LRFtvMzCf0h2Y8s?utm_source=generator&theme=0"
+      width="100%"
+      height="200"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+      style="border-radius: 12px; border: 0;"
+    ></iframe>
+    <a href="/listen" class="inline-block mt-6 text-accent hover:text-accent-light transition-colors font-medium">
+      Full catalogue →
+    </a>
+  </section>
 
 </BaseLayout>
