@@ -48,14 +48,14 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
   <section class="flex flex-col pt-0 pb-0">
     <div class="max-w-6xl mx-auto px-6 w-full">
       {heroPhoto && (
-        <div class="relative overflow-hidden" style="min-height: 90vh;">
+        <div class="relative overflow-hidden" style="height: 90vh;">
           <img
             src={`/cdn/${heroPhoto.r2_key}`}
             alt=""
             class="absolute inset-0 w-full h-full object-cover object-[center_10%]"
           />
           <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.75) 12%, rgba(9,9,11,0.0) 30%, rgba(9,9,11,0.0) 42%, rgba(9,9,11,0.75) 60%, rgba(9,9,11,0.97) 80%, #09090b 100%)"></div>
-          <div class="absolute inset-0" style="background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.0) 12%, rgba(9,9,11,0.0) 88%, #09090b 100%)"></div>
+          <div class="absolute inset-0" style="background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.0) 24%, rgba(9,9,11,0.0) 76%, #09090b 100%)"></div>
           <div class="absolute left-0 right-0 px-8 text-center" style="top: calc(52% - 80px);">
             <p class="text-xs tracking-[0.3em] uppercase font-semibold text-accent mb-3 opacity-90">Est. 1962 · Falmouth, Jamaica</p>
             <h1 class="font-display text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase text-white leading-none mb-4">
@@ -79,7 +79,7 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
   </section>
 
   <!-- Live Shows -->
-  <section class="max-w-4xl mx-auto px-6 pt-2 pb-16">
+  <section class="max-w-4xl mx-auto px-6 pt-0 pb-16">
     <div class="grid grid-cols-1 md:grid-cols-[45%_55%] gap-10 items-start">
       <div>
         <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Live Shows</h2>
