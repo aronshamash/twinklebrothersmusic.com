@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+/* v2 */
 
 @theme {
   --color-zinc-950: #09090b;
