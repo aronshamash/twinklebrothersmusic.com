@@ -6,19 +6,52 @@ const allEvents = await fetchTourDates();
 const events = allEvents.filter((event) => event.confirmed.toUpperCase() === 'Y');
 ---
 
+<style>
+  .tour-gradient {
+    background: linear-gradient(to bottom, rgba(9,9,11,0.75) 0%, rgba(9,9,11,0.25) 8%, rgba(9,9,11,0.25) 28vw, rgba(9,9,11,0.85) 35vw, #09090b 37.6vw);
+  }
+  @media (max-width: 767px) {
+    .tour-gradient {
+      background: linear-gradient(to bottom, rgba(9,9,11,0.5) 0%, rgba(9,9,11,0.1) 5%, rgba(9,9,11,0.1) 35%, rgba(9,9,11,0.85) 52%, #09090b 62%);
+    }
+  }
+</style>
+
 <BaseLayout title="Live Shows — Twinkle Brothers" description="Upcoming Twinkle Brothers live shows and performances.">
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(events.map(event => ({
+    "@context": "https://schema.org",
+    "@type": "MusicEvent",
+    "name": event.eventName,
+    "startDate": event.startDate,
+    "location": {
+      "@type": "Place",
+      "name": event.location || "TBC",
+      "address": event.location || "TBC"
+    },
+    "performer": {
+      "@type": "MusicGroup",
+      "name": "Twinkle Brothers",
+      "url": "https://twinklebrothersmusic.com"
+    },
+    "organizer": {
+      "@type": "MusicGroup",
+      "name": "Twinkle Brothers"
+    },
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    ...(event.ticketUrl ? { "url": event.ticketUrl, "offers": { "@type": "Offer", "url": event.ticketUrl, "availability": "https://schema.org/InStock" } } : {})
+  })))} />
   <div class="relative min-h-screen">
     <div class="absolute inset-0">
       <img
         src="/tour-bg.jpg"
         alt=""
-        class="absolute top-0 left-0 w-full"
-        style="height: auto;"
+        class="absolute top-0 left-0 w-full h-[340px] object-cover object-top md:h-auto md:object-none"
       />
     </div>
-    <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(9,9,11,0.75) 0%, rgba(9,9,11,0.25) 8%, rgba(9,9,11,0.25) 28vw, rgba(9,9,11,0.85) 35vw, #09090b 37.6vw)"></div>
-    <h1 class="relative z-10 font-display text-5xl md:text-7xl tracking-widest uppercase text-white pt-20 pb-0 max-w-4xl mx-auto px-6">Live Shows</h1>
-    <div class="relative z-10 max-w-4xl mx-auto px-6 pb-64 mt-[21vw]">
+    <div class="absolute inset-0 tour-gradient"></div>
+    <h1 class="relative z-10 font-display text-5xl md:text-7xl tracking-widest uppercase text-white pt-56 md:pt-20 pb-0 max-w-4xl mx-auto px-6">Live Shows</h1>
+    <div class="relative z-10 max-w-4xl mx-auto px-6 pb-64 mt-4 md:mt-[21vw]">
       {events.length === 0 ? (
         <p class="text-zinc-400">No upcoming dates at this time. Check back soon.</p>
       ) : (

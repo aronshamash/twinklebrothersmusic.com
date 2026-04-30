@@ -55,6 +55,26 @@ const ogImageURL = new URL(ogImage, Astro.site).href;
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@700&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet" />
     <title>{title}</title>
     <slot name="head" />
+
+    <!-- MusicGroup structured data -->
+    <script is:inline type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "MusicGroup",
+      "name": "Twinkle Brothers",
+      "foundingDate": "1962",
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Falmouth, Jamaica"
+      },
+      "genre": ["Reggae", "Dub"],
+      "url": "https://twinklebrothersmusic.com",
+      "sameAs": [
+        "https://open.spotify.com/artist/129UGN7LRFtvMzCf0h2Y8s",
+        "https://www.youtube.com/@TheTwinkleBrothers",
+        "https://twinklerecords.bandcamp.com/",
+        "https://www.instagram.com/thetwinklebrothers/"
+      ]
+    }</script>
   </head>
   <body class="min-h-screen flex flex-col">
     <Header activeSection={activeSection} />

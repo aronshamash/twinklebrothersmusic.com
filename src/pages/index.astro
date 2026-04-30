@@ -46,23 +46,26 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
 
   <!-- Hero -->
   <section class="flex flex-col pt-0 pb-0">
-    <div class="max-w-6xl mx-auto px-6 w-full">
+    <div class="max-w-6xl mx-auto px-0 md:px-6 w-full">
       {heroPhoto && (
-        <div class="relative overflow-hidden" style="height: 75vh;">
+        <div class="relative h-screen min-h-[520px] overflow-hidden md:h-[74vh] md:max-h-[820px]">
           <img
             src={`/cdn/${heroPhoto.r2_key}`}
-            alt=""
-            class="absolute inset-0 w-full h-full object-cover object-[center_10%]"
+            alt="Norman and Ralston Grant, the Twinkle Brothers"
+            fetchpriority="high"
+            width="2774"
+            height="2646"
+            class="absolute inset-0 w-full h-full object-cover object-[35%_22%] md:object-[center_22%]"
           />
-          <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.75) 12%, rgba(9,9,11,0.0) 30%, rgba(9,9,11,0.0) 42%, rgba(9,9,11,0.75) 60%, rgba(9,9,11,0.97) 82%, #09090b 100%)"></div>
-          <div class="absolute inset-0" style="background: radial-gradient(ellipse 35% 100% at 0% 50%, #09090b 0%, transparent 100%), radial-gradient(ellipse 35% 100% at 100% 50%, #09090b 0%, transparent 100%)"></div>
-          <div class="absolute left-0 right-0 px-8 text-center" style="top: calc(48% - 80px);">
-            <p class="text-xs tracking-[0.3em] uppercase font-semibold text-accent mb-3 opacity-90">Est. 1962 · Falmouth, Jamaica</p>
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, #09090b 0%, rgba(9,9,11,0.75) 12%, rgba(9,9,11,0.0) 28%, rgba(9,9,11,0.0) 58%, rgba(9,9,11,0.75) 74%, rgba(9,9,11,0.97) 88%, #09090b 100%)"></div>
+          <div class="absolute inset-0" style="background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.0) 15%, rgba(9,9,11,0.0) 65%, #09090b 100%)"></div>
+          <div class="absolute left-0 right-0 bottom-0 px-8 pb-8 text-center">
+            <p class="text-xs tracking-[0.3em] uppercase font-semibold text-accent mb-3 opacity-90 max-w-[160px] mx-auto md:max-w-none">Est. 1962 · Falmouth, Jamaica</p>
             <h1 class="font-display text-5xl md:text-7xl lg:text-8xl tracking-widest uppercase text-white leading-none mb-4">
               Twinkle<br>Brothers
             </h1>
             <p class="text-zinc-300 text-base md:text-lg mb-6 max-w-xl mx-auto">
-              Reggae legends from Falmouth, Jamaica. Six decades of conscious music, spiritual conviction, and international touring.
+              Reggae legends internationally renowned for their distinctive sound and socially conscious lyrics.
             </p>
             <div class="flex flex-wrap gap-4 justify-center">
               <a href="/history" class="bg-accent text-zinc-950 font-semibold px-8 py-3 rounded hover:bg-accent-light transition-colors">
@@ -79,7 +82,7 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
   </section>
 
   <!-- Live Shows -->
-  <section class="max-w-4xl mx-auto px-6 pt-0 pb-16">
+  <section class="max-w-4xl mx-auto px-6 pt-10 pb-16">
     <div class="grid grid-cols-1 md:grid-cols-[45%_55%] gap-10 items-start">
       <div>
         <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Live Shows</h2>
@@ -101,7 +104,7 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
         </a>
       </div>
       {tourPhoto && (
-        <figure>
+        <figure class="md:pt-20">
           <img
             src={`/cdn/${tourPhoto.r2_key}`}
             alt={tourPhoto.caption || ''}
@@ -117,22 +120,24 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
   <!-- Our Story -->
   <section class="max-w-4xl mx-auto px-6 pt-4 pb-16 overflow-hidden">
     <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-8">Our Story</h2>
-    {storyPhoto && (
-      <figure class="float-right ml-8 mb-4 w-2/5">
-        <img
-          src={`/cdn/${thumbKey(storyPhoto.r2_key)}`}
-          alt={storyPhoto.caption || ''}
-          class="w-full rounded-lg"
-          loading="lazy"
-        />
-      </figure>
-    )}
-    <p class="text-zinc-300 text-lg leading-relaxed mb-6">
-      Norman and Ralston Grant grew up in Falmouth, a small port town on Jamaica's north coast, where they started making music in 1962 with Sunday school choir harmonies and whatever instruments they could piece together, including sardine tins strung with fishing line. They spent years working the Kingston studio circuit alongside the generation of musicians who would go on to shape Jamaican reggae, entered the national Pop and Mento Festival and kept entering until they won, and eventually signed to Virgin Records in the late 1970s. Norman moved to the UK in 1986 and has run the band and the independent Twinkle label from there ever since, releasing records on their own terms while touring regularly across Europe, North America and beyond. Over sixty albums in, with Norman writing original conscious lyrics, the music has continued.
-    </p>
-    <a href="/history" class="text-accent hover:text-accent-light transition-colors font-medium">
-      Read the full history →
-    </a>
+    <div class="flex flex-col md:block">
+      {storyPhoto && (
+        <figure class="order-2 w-full mt-6 md:order-none md:float-right md:ml-8 md:mb-4 md:mt-0 md:w-2/5">
+          <img
+            src={`/cdn/${thumbKey(storyPhoto.r2_key)}`}
+            alt={storyPhoto.caption || ''}
+            class="w-full rounded-lg"
+            loading="lazy"
+          />
+        </figure>
+      )}
+      <p class="order-1 text-zinc-300 text-lg leading-relaxed mb-6 md:order-none">
+        Norman and Ralston Grant grew up in Falmouth, a small port town on Jamaica's north coast, where they started making music in 1962 with Sunday school choir harmonies and whatever instruments they could piece together, including sardine tins strung with fishing line. They spent years working the Kingston studio circuit alongside the generation of musicians who would go on to shape Jamaican reggae, entered the national Pop and Mento Festival and kept entering until they won, and eventually signed to Virgin Records in the late 1970s. Norman moved to the UK in 1986 and has run the band and the independent Twinkle label from there ever since, releasing records on their own terms while touring regularly across Europe, North America and beyond. Over sixty albums released and more to come, and with Norman continuing to write relavent original lyrics, the music has continued.
+      </p>
+      <a href="/history" class="order-3 mt-6 text-accent hover:text-accent-light transition-colors font-medium md:order-none md:mt-0">
+        Read the full history →
+      </a>
+    </div>
   </section>
 
   <!-- Photos -->
@@ -140,7 +145,7 @@ const featuredPosters = allFeaturedRaw.slice(featuredPhotoIds.length).filter(Boo
     <section class="max-w-4xl mx-auto px-6 pt-4 pb-16">
       <h2 class="font-display text-4xl md:text-5xl tracking-widest uppercase text-white mb-6">Photography</h2>
       <p class="text-zinc-400 text-lg leading-relaxed mb-8">
-        We have collected some of the best photography we can find, thanks to all the photographers who documented the band over the years. If you have any, especially from the early days, please <a href="/contact" class="text-accent hover:text-accent-light transition-colors">get in touch</a>.
+        We have collected some of the best photography we can find, thanks to all the photographers who documented the band over the years. If you have any you would be happy to share, especially from the early days, please <a href="/contact" class="text-accent hover:text-accent-light transition-colors">get in touch</a>.
       </p>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
         {featuredPhotos.map((photo) => photo && (

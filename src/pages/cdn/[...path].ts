@@ -23,10 +23,12 @@ export const GET: APIRoute = async ({ params, locals }) => {
 
   if (!object) return new Response('Not found', { status: 404 });
 
-  return new Response(object.body, {
-    headers: {
-      'Content-Type': object.httpMetadata?.contentType ?? 'image/jpeg',
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-  });
+  const etag = object.etag ? `"${object.etag}"` : null;
+  const headers: Record<string, string> = {
+    'Content-Type': object.httpMetadata?.contentType ?? 'image/jpeg',
+    'Cache-Control': 'public, max-age=31536000',
+  };
+  if (etag) headers['ETag'] = etag;
+
+  return new Response(object.body, { headers });
 };

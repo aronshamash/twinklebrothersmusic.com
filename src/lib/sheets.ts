@@ -1,5 +1,15 @@
 const DATE_FORMAT: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
 
+function toIsoDate(raw: string): string | null {
+  const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return raw;
+  const dmy = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
+  const parsed = new Date(raw);
+  if (!isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+  return null;
+}
+
 function formatSheetDate(raw: string): string | null {
   const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (iso) {
@@ -17,6 +27,7 @@ function formatSheetDate(raw: string): string | null {
 
 export interface TourEvent {
   date: string;
+  startDate: string; // ISO 8601 for schema.org
   eventName: string;
   location: string;
   contact: string;
@@ -123,6 +134,7 @@ export async function fetchTourDates(skipCache = false): Promise<TourEvent[]> {
 
       events.push({
         date: displayDate,
+        startDate: toIsoDate(rawDate) ?? displayDate,
         eventName: String(row[1] || '').trim(),
         location: String(row[2] || '').trim(),
         contact: String(row[3] || '').trim(),
