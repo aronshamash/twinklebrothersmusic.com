@@ -15,7 +15,7 @@
     "populate-streaming": "tsx scripts/populate-streaming.ts",
     "populate-streaming:local": "tsx scripts/populate-streaming.ts --local",
     "generate-thumbnails": "tsx scripts/generate-thumbnails.ts",
-    "deploy": "astro build && npx wrangler pages deploy dist --project-name twinkle-brothers-site",
+    "deploy": "astro build && npx wrangler pages deploy dist --project-name twinkle-brothers-site --branch main",
     "ship": "git push && pnpm run deploy"
   },
   "dependencies": {
