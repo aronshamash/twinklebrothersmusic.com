@@ -91,6 +91,29 @@ async function getGoogleAccessToken(clientEmail: string, privateKeyPem: string):
   return tokenData.access_token;
 }
 
+function parseRows(rows: string[][]): TourEvent[] {
+  const events: TourEvent[] = [];
+  for (const row of rows) {
+    if (row.length < 2 || !row[0]) continue;
+    const rawDate = String(row[0]).trim();
+    if (rawDate === 'Date' || rawDate === '') continue;
+    const displayDate = formatSheetDate(rawDate);
+    if (!displayDate) continue;
+    if (!row[1] || String(row[1]).trim() === '') continue;
+    events.push({
+      date: displayDate,
+      startDate: toIsoDate(rawDate) ?? displayDate,
+      eventName: String(row[1] || '').trim(),
+      location: String(row[2] || '').trim(),
+      contact: String(row[3] || '').trim(),
+      confirmed: String(row[4] || '').trim(),
+      paidShow: String(row[5] || '').trim(),
+      ticketUrl: String(row[6] || '').trim(),
+    });
+  }
+  return events;
+}
+
 export async function fetchTourDates(skipCache = false): Promise<TourEvent[]> {
   const sheetId = import.meta.env.GOOGLE_SHEET_ID;
   const credentials = import.meta.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -108,41 +131,53 @@ export async function fetchTourDates(skipCache = false): Promise<TourEvent[]> {
     const serviceAccount = JSON.parse(credentials);
     const accessToken = await getGoogleAccessToken(serviceAccount.client_email, serviceAccount.private_key);
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:G`;
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    // Discover all year-named tabs
+    const metaResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets.properties.title`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    if (!metaResponse.ok) {
+      console.error(`Sheets metadata error: ${metaResponse.status}`);
+      return [];
+    }
+    const meta = await metaResponse.json() as { sheets: { properties: { title: string } }[] };
+    const currentYear = new Date().getFullYear();
+    const yearTabs = meta.sheets
+      .map(sheet => sheet.properties.title)
+      .filter(title => /^\d{4}$/.test(title) && Number(title) >= currentYear);
 
-    if (!response.ok) {
-      console.error(`Sheets API error: ${response.status}`);
+    if (yearTabs.length === 0) {
+      console.warn('No year tabs found >= current year');
       return [];
     }
 
-    const data = await response.json() as { values?: string[][] };
-    const rows = data.values ?? [];
-    const events: TourEvent[] = [];
-
-    for (const row of rows) {
-      if (row.length < 2 || !row[0]) continue;
-
-      const rawDate = String(row[0]).trim();
-      if (rawDate === 'Date' || rawDate === '') continue;
-
-      const displayDate = formatSheetDate(rawDate);
-      if (!displayDate) continue;
-      if (!row[1] || String(row[1]).trim() === '') continue;
-
-      events.push({
-        date: displayDate,
-        startDate: toIsoDate(rawDate) ?? displayDate,
-        eventName: String(row[1] || '').trim(),
-        location: String(row[2] || '').trim(),
-        contact: String(row[3] || '').trim(),
-        confirmed: String(row[4] || '').trim(),
-        paidShow: String(row[5] || '').trim(),
-        ticketUrl: String(row[6] || '').trim(),
-      });
+    // Fetch all relevant tabs in one batchGet
+    const rangesParam = yearTabs.map(tab => `ranges=${encodeURIComponent(`${tab}!A:G`)}`).join('&');
+    const batchResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values:batchGet?${rangesParam}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    if (!batchResponse.ok) {
+      console.error(`Sheets batchGet error: ${batchResponse.status}`);
+      return [];
     }
+    const batchData = await batchResponse.json() as { valueRanges: { values?: string[][] }[] };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const events: TourEvent[] = batchData.valueRanges
+      .flatMap(range => parseRows(range.values ?? []))
+      .filter(event => {
+        const iso = toIsoDate(event.startDate);
+        if (!iso) return true;
+        return new Date(iso) >= today;
+      })
+      .sort((a, b) => {
+        const isoA = toIsoDate(a.startDate) ?? '';
+        const isoB = toIsoDate(b.startDate) ?? '';
+        return isoA.localeCompare(isoB);
+      });
 
     cachedEvents = events;
     cacheTime = Date.now();
