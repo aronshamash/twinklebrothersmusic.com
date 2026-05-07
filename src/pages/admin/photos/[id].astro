@@ -165,15 +165,32 @@ const dateLabel = formatImageDate(image);
       }
     }
 
-    replaceInput.addEventListener('change', () => {
-      const file = replaceInput.files?.[0];
-      if (!file) return;
+    function applyReplaceFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
       if (replaceObjectUrl) URL.revokeObjectURL(replaceObjectUrl);
       replaceFile = file;
       replaceObjectUrl = URL.createObjectURL(file);
       replacePreviewImg.src = replaceObjectUrl;
       replaceFilename.textContent = file.name;
       replacePreview.classList.remove('hidden');
+    }
+
+    replaceInput.addEventListener('change', () => {
+      applyReplaceFile(replaceInput.files?.[0]);
+    });
+
+    const replaceDrop = document.getElementById('replace-drop');
+    replaceDrop.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      replaceDrop.classList.add('border-zinc-400');
+    });
+    replaceDrop.addEventListener('dragleave', () => {
+      replaceDrop.classList.remove('border-zinc-400');
+    });
+    replaceDrop.addEventListener('drop', (event) => {
+      event.preventDefault();
+      replaceDrop.classList.remove('border-zinc-400');
+      applyReplaceFile(event.dataTransfer?.files?.[0]);
     });
 
     clearReplaceBtn.addEventListener('click', () => {
