@@ -85,9 +85,13 @@ const videos = release.videos
   .map(v => ({ ...v, ytId: youtubeId(v.uri) }))
   .filter(v => v.ytId)
   .slice(0, 1);
+
+const formatLabel = [release.format, release.label && `on ${release.label}`].filter(Boolean).join(' ');
+const yearSuffix = release.year ? ` (${release.year})` : '';
+const releaseDescription = `${release.title}${yearSuffix}${formatLabel ? ` — ${formatLabel}` : ''}. Twinkle Brothers discography.`;
 ---
 
-<BaseLayout title={`${release.title} — Twinkle Brothers`}>
+<BaseLayout title={`${release.title} — Twinkle Brothers`} description={releaseDescription}>
   <div class="pt-24 max-w-5xl mx-auto px-6 pb-20">
 
     <a href="/discography" class="inline-flex items-center gap-2 text-zinc-500 text-sm hover:text-white transition-colors mb-12">

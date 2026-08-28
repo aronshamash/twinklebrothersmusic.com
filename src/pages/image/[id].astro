@@ -24,9 +24,13 @@ const backLabel = isTimeline ? 'Timeline' : isPoster ? 'Posters' : 'Photos';
 const activeSection = isTimeline ? '/timeline' : isPoster ? '/posters' : '/photos';
 
 const heading = image.caption || displayDate || 'Archive';
+
+const contextSuffix = [displayDate, image.location].filter(Boolean).join(', ');
+const imageDescription = image.caption
+  || (contextSuffix ? `Twinkle Brothers ${image.type} — ${contextSuffix}.` : `Twinkle Brothers ${image.type} archive photo.`);
 ---
 
-<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`} activeSection={activeSection}>
+<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`} description={imageDescription} activeSection={activeSection}>
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
     <!-- Nav row -->
     <div class="mb-6 flex items-center justify-between">
