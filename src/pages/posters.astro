@@ -8,7 +8,7 @@ const env = (Astro.locals as any).runtime?.env;
 const posters = env ? await getImagesByType(env, 'poster') : [];
 ---
 
-<BaseLayout title="Posters — Twinkle Brothers">
+<BaseLayout title="Posters — Twinkle Brothers" description="Concert and tour poster archive for the Twinkle Brothers, spanning decades of live reggae shows.">
   <style is:global>
     .pswp { --pswp-bg: #09090b; --pswp-icon-color: #fff; --pswp-icon-color-secondary: #71717a; }
     .pswp__img { object-fit: contain !important; }
