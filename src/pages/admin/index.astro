@@ -9,7 +9,9 @@ if (env && await verifyAdminCookie(Astro.request, env)) {
   return Astro.redirect('/admin/upload');
 }
 
-const hasError = Astro.url.searchParams.get('error') === '1';
+const errorParam = Astro.url.searchParams.get('error');
+const hasError = errorParam === '1';
+const isRateLimited = errorParam === 'ratelimited';
 ---
 
 <!doctype html>
@@ -46,9 +48,11 @@ const hasError = Astro.url.searchParams.get('error') === '1';
         <p class="text-zinc-500 text-sm mt-1">Admin</p>
       </div>
 
-      {hasError && (
+      {(hasError || isRateLimited) && (
         <div class="bg-red-950/50 border border-red-900 rounded-xl px-4 py-3 mb-5">
-          <p class="text-red-400 text-sm text-center">Incorrect password.</p>
+          <p class="text-red-400 text-sm text-center">
+            {isRateLimited ? 'Too many attempts. Please try again later.' : 'Incorrect password.'}
+          </p>
         </div>
       )}
 
