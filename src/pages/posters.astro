@@ -39,7 +39,7 @@ const posters = env ? await getImagesByType(env, 'poster') : [];
           >
             <img
               src={`/cdn/${thumbKey(poster.r2_key)}`}
-              alt={poster.caption || ''}
+              alt={poster.caption || (formatImageDate(poster) ? `Twinkle Brothers poster — ${formatImageDate(poster)}` : 'Twinkle Brothers poster')}
               class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
               loading="lazy"
             />
