@@ -89,9 +89,33 @@ const videos = release.videos
 const formatLabel = [release.format, release.label && `on ${release.label}`].filter(Boolean).join(' ');
 const yearSuffix = release.year ? ` (${release.year})` : '';
 const releaseDescription = `${release.title}${yearSuffix}${formatLabel ? ` — ${formatLabel}` : ''}. Twinkle Brothers discography.`;
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://twinklebrothersmusic.com/' },
+  { name: 'Discography', url: 'https://twinklebrothersmusic.com/discography' },
+  { name: release.title, url: `https://twinklebrothersmusic.com/discography/${releaseId}` },
+];
+
+const musicAlbumSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'MusicAlbum',
+  name: release.title,
+  byArtist: {
+    '@type': 'MusicGroup',
+    name: 'Twinkle Brothers',
+    url: 'https://twinklebrothersmusic.com',
+  },
+};
+if (release.year) musicAlbumSchema.datePublished = String(release.year);
+if (release.label) musicAlbumSchema.recordLabel = { '@type': 'Organization', name: release.label };
+if (coverUrl) musicAlbumSchema.image = coverUrl;
+if (tracks.length > 0) musicAlbumSchema.numTracks = tracks.length;
 ---
 
-<BaseLayout title={`${release.title} — Twinkle Brothers`} description={releaseDescription}>
+<BaseLayout title={`${release.title} — Twinkle Brothers`} description={releaseDescription} breadcrumbs={breadcrumbs}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(musicAlbumSchema)} />
+  </Fragment>
   <div class="pt-24 max-w-5xl mx-auto px-6 pb-20">
 
     <a href="/discography" class="inline-flex items-center gap-2 text-zinc-500 text-sm hover:text-white transition-colors mb-12">

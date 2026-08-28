@@ -9,6 +9,7 @@ interface Props {
   ogImage?: string;
   ogType?: string;
   activeSection?: string;
+  breadcrumbs?: { name: string; url: string }[];
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   ogImage = '/og.png',
   ogType = 'website',
   activeSection,
+  breadcrumbs,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
@@ -78,6 +80,19 @@ const ogImageURL = new URL(ogImage, Astro.site).href;
         "https://www.instagram.com/thetwinklebrothers/"
       ]
     }</script>
+
+    {breadcrumbs && breadcrumbs.length > 0 && (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((crumb, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: crumb.name,
+          item: crumb.url,
+        })),
+      })} />
+    )}
   </head>
   <body class="min-h-screen flex flex-col">
     <Header activeSection={activeSection} />
