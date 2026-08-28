@@ -1,6 +1,16 @@
 import type { MiddlewareHandler } from 'astro';
 
+const TRAILING_SLASH_REDIRECTS: Record<string, string> = {
+  '/discography/': '/discography',
+  '/history/': '/history',
+};
+
 export const onRequest: MiddlewareHandler = async (context, next) => {
+  const canonicalPath = TRAILING_SLASH_REDIRECTS[context.url.pathname];
+  if (canonicalPath) {
+    return context.redirect(canonicalPath, 301);
+  }
+
   const response = await next();
 
   response.headers.set('X-Content-Type-Options', 'nosniff');
