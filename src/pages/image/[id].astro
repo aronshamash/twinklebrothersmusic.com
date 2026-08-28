@@ -28,9 +28,15 @@ const heading = image.caption || displayDate || 'Archive';
 const contextSuffix = [displayDate, image.location].filter(Boolean).join(', ');
 const imageDescription = image.caption
   || (contextSuffix ? `Twinkle Brothers ${image.type} — ${contextSuffix}.` : `Twinkle Brothers ${image.type} archive photo.`);
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://twinklebrothersmusic.com/' },
+  { name: backLabel, url: `https://twinklebrothersmusic.com${backHref}` },
+  { name: heading, url: `https://twinklebrothersmusic.com/image/${image.id}` },
+];
 ---
 
-<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`} description={imageDescription} activeSection={activeSection}>
+<BaseLayout title={`${image.caption || 'Archive'} — Twinkle Brothers`} description={imageDescription} activeSection={activeSection} breadcrumbs={breadcrumbs}>
   <div class="pt-24 max-w-6xl mx-auto px-6 pb-20">
     <!-- Nav row -->
     <div class="mb-6 flex items-center justify-between">
