@@ -68,7 +68,7 @@ const dotImages = images.map((image) => ({
                   <div class="relative">
                     <img
                       src={`/cdn/${thumbKey(image.r2_key)}`}
-                      alt={image.caption || ''}
+                      alt={image.caption || (formatImageDate(image) ? `Twinkle Brothers archive photo — ${formatImageDate(image)}` : 'Twinkle Brothers archive photo')}
                       class="w-full rounded-lg group-hover:opacity-80 transition-opacity"
                       loading="lazy"
                     />
@@ -117,7 +117,7 @@ const dotImages = images.map((image) => ({
                 <div class="dot-popup absolute bottom-8 left-1/2 -translate-x-1/2 w-48 bg-zinc-900 border border-zinc-700 rounded-lg overflow-hidden shadow-xl pointer-events-none opacity-0 transition-opacity z-10">
                   <img
                     src={`/cdn/${thumbKey(image.r2_key)}`}
-                    alt={image.caption || ''}
+                    alt={image.caption || (image.displayDate ? `Twinkle Brothers archive photo — ${image.displayDate}` : 'Twinkle Brothers archive photo')}
                     class="w-full h-32 object-cover"
                     loading="lazy"
                   />
