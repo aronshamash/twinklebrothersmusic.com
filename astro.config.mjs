@@ -12,6 +12,7 @@ export default defineConfig({
       !page.includes('/interviews/') &&
       !page.includes('/musicians/') &&
       !page.includes('/shop/'),
+    customSitemaps: ['https://twinklebrothersmusic.com/sitemap-discography.xml'],
   })],
   vite: {
     plugins: [tailwindcss()],
