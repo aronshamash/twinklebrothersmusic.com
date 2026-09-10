@@ -334,27 +334,29 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
 </BaseLayout>
 
 {roxyPoster && (
-  <div id="roxy-lightbox" class="fixed inset-0 z-50 bg-black/95 hidden items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Poster full view">
+  <div id="roxy-lightbox" class="fixed inset-0 z-50 bg-black/95 hidden flex-col items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Poster full view">
     <button id="roxy-lightbox-close" class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors" aria-label="Close">
       <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <img
       src={`/cdn/${roxyPoster.r2_key}`}
       alt={roxyPoster.caption || 'Twinkle Brothers first US performance poster, Roxy LA 1982'}
-      class="max-h-full max-w-full object-contain rounded"
+      class="max-h-[85vh] max-w-full object-contain rounded"
     />
+    <p class="text-zinc-400 text-sm mt-4 text-center">First US show, The Roxy, Los Angeles, 1982</p>
   </div>
 )}
 
-<div id="shaka-shop-lightbox" class="fixed inset-0 z-50 bg-black/95 hidden items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Photo full view">
+<div id="shaka-shop-lightbox" class="fixed inset-0 z-50 bg-black/95 hidden flex-col items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Photo full view">
   <button id="shaka-shop-lightbox-close" class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors" aria-label="Close">
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
   <img
     src="/russ_arts_craft_culture.jpg"
     alt="Jah Shaka's Arts, Craft and Culture shop in New Cross, South East London, 1980s, with a young Russ Disciple standing outside"
-    class="max-h-full max-w-full object-contain rounded"
+    class="max-h-[85vh] max-w-full object-contain rounded"
   />
+  <p class="text-zinc-400 text-sm mt-4 text-center">Jah Shaka's Arts, Craft and Culture shop, New Cross, with a young Russ Disciple standing outside, 1980s</p>
 </div>
 
 <script>
