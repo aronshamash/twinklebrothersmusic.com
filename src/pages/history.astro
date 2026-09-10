@@ -202,6 +202,18 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
     <!-- SECTION: ENGLAND -->
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">England</h2>
     <div class="prose prose-invert prose-lg max-w-none">
+      {shakaPhoto ? (
+        <figure class="not-prose my-12">
+          <a href={`/image/${shakaPhoto.id}?from=photo`}>
+            <img
+              src={`/cdn/${thumbKey(shakaPhoto.r2_key)}`}
+              alt={shakaPhoto.caption || ''}
+              class="w-full rounded-lg hover:opacity-90 transition-opacity"
+            />
+          </a>
+          <figcaption class="text-zinc-500 text-sm mt-3 text-center">Jah Shaka and Norman in South East London, 1980s. Photo by David Corio.</figcaption>
+        </figure>
+      ) : null}
       <p>
         Norman had been making regular trips to England since 1975. From 1976 the label Carib Gems was distributing his music there, releasing <a href="/discography/650282" class="text-accent hover:text-accent-light">"Do Your Own Thing"</a> the following year. Letters arrived from England telling Norman that his songs were being pirated. In 1978 he flew over with four songs, a local reggae A&R man known as Wenty connected him to Virgin Records, then a young independent label operating out of the Portobello Road area. He played the tracks to a room of around ten people that included the label's co-founders Simon Draper and Richard Branson. Virgin would release <a href="/discography/326725" class="text-accent hover:text-accent-light">"Love"</a>, the first 10-inch reggae record released in England.
       </p>
@@ -218,18 +230,6 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
         </button>
         <figcaption class="text-zinc-500 text-xs mt-2 text-center">Jah Shaka's Arts, Craft and Culture shop, New Cross, with a young Russ Disciple standing outside, 1980s</figcaption>
       </figure>
-      {shakaPhoto ? (
-        <figure class="not-prose float-left mr-8 mb-4 w-1/3">
-          <a href={`/image/${shakaPhoto.id}?from=photo`}>
-            <img
-              src={`/cdn/${thumbKey(shakaPhoto.r2_key)}`}
-              alt={shakaPhoto.caption || ''}
-              class="w-full rounded-lg hover:opacity-90 transition-opacity"
-            />
-          </a>
-          <figcaption class="text-zinc-500 text-xs mt-2 text-center">Jah Shaka and Norman in South East London, 1980s. Photo by David Corio.</figcaption>
-        </figure>
-      ) : null}
       <p>
         After America and Sunsplash, Norman made England his permanent home. His friendship with <a href="https://en.wikipedia.org/wiki/Jah_Shaka" target="_blank" rel="noopener" class="text-accent hover:text-accent-light">Jah Shaka</a> went back years by then. Shaka, born Neville Powell in Clarendon Parish, Jamaica, ran one of the most significant sound system operation in British reggae history out of South East London. His dances had become a kind of institution and his influence carrying forward into jungle, drum and bass, and dubstep. Shaka also ran the Culture Shop in New Cross, a community hub combining a record store, Caribbean food, and a Rastafari hair salon. The Twinkle Brothers were a fixture of his regular selection, Norman a constant presence at his dances, and Shaka would seek him out whenever he wanted new dubplates. The two collaborated in the early 1980s on "Revelation 18", a landmark of UK roots reggae ther recording coming about when Shaka picked up the bass guitar while the regular Twinkle brothers bassist was on a toilet break! When the Polish radio journalist Władek Kliszcz came to London in 1986 looking for Jamaican artists, it was at the Culture Shop that he and Norman met. Norman took up UK residency the same year.
       </p>
@@ -244,6 +244,9 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
       </p>
       <p>
         Kliszcz worked for Polish state radio and came to London in 1986 on holiday, aware that Jamaican artists had been settling in England. He made contact with Norman and arranged an interview at Jah Shaka's Culture Shop, delivering a simple message that the Twinkle Brothers were popular in Poland, and Norman needed to come see for himself. What Norman found when he arrived in 1988 was a country still under Communist rule, Solidarity live in the streets, soldiers at the airport, and young people cheering from the pavements as the car moved through the city. The studio was another matter, a 24-track facility for £1.20 an hour, against £25 or more in England. Norman made eight albums and was paid in millions of złoty that could not be taken out of the country, so he bought leather coats, seventeen of them at five złoty apiece, loaded three suitcases, and sold them in London for £75 to £85 each. "If I never count millions again," he said in 2023, "I've counted millions in Poland".
+      </p>
+      <p>
+        An earlier visit had produced something else, an underground LP released in 1984 with the Solidarity logo on the cover, pressed outside official channels and circulated through the networks keeping the movement alive.
       </p>
 
     {polandStill && (
@@ -264,9 +267,6 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
       </figure>
     )}
 
-      <p>
-        An earlier visit had produced something else, an underground LP released in 1984 with the Solidarity logo on the cover, pressed outside official channels and circulated through the networks keeping the movement alive.
-      </p>
       <p>
         Kliszcz also introduced Norman to Trebunie-Tutki, a family band from Zakopane in the Tatra Mountains who played traditional Polish highland music. Norman and the bassist Dub Judah travelled there and lived with the family for a week, eating, sleeping, and rehearsing in the house, with Anna, the sixteen-year-old daughter of the family band, serving as translator. At Spirit Studio in Zakopane, ganja growing in the garden outside, Norman told Judah how they were going to approach the recording: "We have to create our own beat. Don't follow them". They laid bass and drum first, then brought the violins in, in the end making four albums together. The Twinkle Brothers went to number one on Polish radio above Michael Jackson. The TVP documentary "Higher Heights" filmed them in Zakopane in 1992 (the <a href="/discography/209453" class="text-accent hover:text-accent-light">album of the same name</a> followed the next year), and they band even featured in a polish film called <a href="https://youtu.be/keUOiCcHtoQ?t=2766" target="_blank" rel="noopener" class="text-accent hover:text-accent-light">"Girl Guide"</a> which came out in 1995. They picked up a Gold record for <a href="/discography/4790056" class="text-accent hover:text-accent-light">"Songs Of Glory · Pieśni Chwały"</a>, a long overdue collaboration record released in 2008.
       </p>
