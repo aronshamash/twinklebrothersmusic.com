@@ -13,7 +13,6 @@ const polandStill = env ? await getImageById(env, '158d1ec6-8906-4415-9eea-31f8e
 const groeningArticle = env ? await getImageById(env, '8729a7c5-efa8-4ee0-8e98-03568b096233') : null;
 const closingPhoto = env ? await getImageById(env, '07c09655-9ff5-49bc-a261-33f9377dd0db') : null;
 const sunsplashPhoto = env ? await getImageById(env, 'ceb5a659-f09c-4667-80c5-82a9c721bfaf') : null;
-const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48ad4140ade9') : null;
 ---
 
 <BaseLayout title="History | Twinkle Brothers" description="The story of the Twinkle Brothers reggae band, from Falmouth, Jamaica to the world stage. Six decades of conscious music, Rastafarian conviction, and international touring.">
@@ -58,18 +57,6 @@ const festivalPhoto = env ? await getImageById(env, '44fa65ed-3920-42df-8688-48a
     <!-- SECTION: THE FESTIVALS -->
     <h2 class="text-3xl md:text-4xl text-white font-bold mt-16 mb-6" style="font-family: var(--font-heading-serif);">Independence & the Festivals</h2>
     <div class="prose prose-invert prose-lg max-w-none">
-      {festivalPhoto && (
-        <figure class="not-prose float-right ml-8 mb-4 w-[40%] mt-3">
-          <a href={`/image/${festivalPhoto.id}?from=history`}>
-            <img
-              src={`/cdn/${thumbKey(festivalPhoto.r2_key)}`}
-              alt={festivalPhoto.caption || ''}
-              class="w-full rounded-lg hover:opacity-90 transition-opacity"
-            />
-          </a>
-          <figcaption class="text-zinc-500 text-xs mt-1 text-center">The early years</figcaption>
-        </figure>
-      )}
       <p>
         "When we heard we were getting Independence, we're going to be our own nation," Norman said. The practical form that took, for two boys in Trelawny, was the Jamaica Pop and Mento Festival, which the government launched the same year.
       </p>
