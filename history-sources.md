@@ -100,6 +100,32 @@ URL: https://www.youtube.com/watch?v=igw-vnJi2wQ
 
 ---
 
+## Norman Grant fact-check, July 2026
+
+Points put to Norman directly. **Where these conflict with the interview notes above or with published sources, these take precedence.**
+
+- Name given by the Rastaman known as **Some-me-say**, in **Falmouth** (not Uggingstown, as the Brixton notes have it)
+- Father sang folk songs during **weekend beach trips** — confirmed
+- Festival chronology and medals: the history page as written is correct. Parish win on first entry, decision against them at the Montego Bay regional, same again 1963, regional taken on the third attempt in 1964, Kingston group category plus Norman's solo category that same year, then two gold medals at the All Island Festival in 1968
+- Hotel repertoire included **Beatles ballads** — confirmed
+- The Cardinals included **teachers** as well as lawyers and accountants
+- **First act ever to rent Treasure Isle** outright from Duke Reid — confirmed, state flatly
+- The Bunny Lee sessions at Randy's were the **first the Soul Syndicate played together** — confirmed
+- Kliszcz and Norman met **at Jah Shaka's Culture Shop** (the 2023 Maken transcript can be read as house-first; the shop is correct)
+- **Wenty**, in 1978, made the Virgin introduction (not "DJ Sir Lee" in 1976, as noted below)
+- **Jah Shaka played bass on "Revelation 18"**, having picked it up while the band's own bassist was in the toilet — confirmed
+- Jah Shaka / Norman portrait: **The Albany, Deptford, 1988**, photo by David Corio
+
+## Corrections established from primary evidence, 2026
+
+- **First US performance: the Roxy, Los Angeles, 2 November 1980**, not 1982. The poster in the archive is dated to the day and captioned "1st Performance in U.S.A.". The page had collapsed two separate American trips into one. Norman was in the States in 1980 singing with Inner Circle, who toured on after Jacob Miller was killed in March that year. Sunsplash remains August 1982
+- John Belushi died 5 March 1982, so his presence at the Roxy is consistent with the 1980 date and was not with 1982
+- ***Rasta Pon Top*: Grounation, GROL 506, UK, 1975** — confirmed from the release listing, against the Carib Gems attribution noted below
+- **Matt Groening's LA Reader music column, "Sound Mix", began in 1982.** The article image record carries decade precision only, so the review cannot be dated more closely than the 1980s
+- Ralston dates his locks to 1974, "the same year that they say Selassie I died". Selassie was deposed in September 1974 and died in August 1975, so this looks like a conflation. Left out of the page
+
+---
+
 ## Published Sources
 
 ### Wikipedia — Twinkle Brothers
