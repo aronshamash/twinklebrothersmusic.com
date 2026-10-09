@@ -69,7 +69,11 @@ export async function POST(context: APIContext): Promise<Response> {
   "caption": "Short event title (e.g. 'Dub Shack Presents — Twinkle Brothers Live')",
   "credit": "Promoter or production company name, or null"
 }
-If a year is not visible but a day+month is, use the most plausible year based on context.`,
+If a year is not printed but a day+month is:
+- If a weekday (e.g. "TUE", "Saturday") is also printed, only consider years where that day+month actually falls on that weekday — most day/month combinations match several different years, and picking one that doesn't match the printed weekday is wrong.
+- Among years consistent with the weekday, narrow further using other visual clues on the poster (phone number format/area code, ticket price, design/print style, venue's known operating years) rather than defaulting to the most recent match.
+- If you cannot narrow it to a single year with reasonable confidence even after this, set "event_date" to null rather than guessing — a human will fill in the year during review.
+Today's date is ${new Date().toISOString().slice(0, 10)}; do not assume a poster is recent just because its date is close to today.`,
           },
         ],
       }],
